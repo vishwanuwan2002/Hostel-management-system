@@ -1,0 +1,535 @@
+<?php
+// booking.php - Combined Booking Page with Dynamic Room Status
+
+// 1. Database Connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "hostel_system";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// 2. Fetch Room Data
+$sql = "SELECT room_number, room_type, price_per_month, current_status FROM rooms ORDER BY room_number ASC";
+$result = $conn->query($sql);
+
+$roomsData = [];
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        $roomsData[] = [
+            'number' => (int)$row['room_number'],
+            'type' => $row['room_type'],
+            'status' => $row['current_status'],
+            'price' => (float)$row['price_per_month']
+        ];
+    }
+}
+$conn->close();
+
+// Convert to JSON for JavaScript
+$roomsDataJSON = json_encode($roomsData);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starlight Hostel - Seamless Booking & Check-in</title>
+   
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+   
+    <style>
+        /* Custom styles for professional appearance and status indicators */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e7f1ff;
+            /* Note: Background image path 'image/six_room.jpg' must be correct */
+            background-image: url('image/six_room.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .room-card {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .room-card:not(.status-booked):not(.status-cleaning):hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .room-card.selected {
+            border: 4px solid #0d6efd !important;
+            box-shadow: 0 0 10px rgba(13, 110, 253, 0.5) !important;
+            background-color: #e7f1ff !important;
+            color: #0d6efd !important;
+            font-weight: bold;
+        }
+
+        /* Status colors using Bootstrap conventions */
+        .status-available { background-color: #d1e7dd; color: #0f5132; border: 1px solid #0f5132; }
+        .status-booked { background-color: #f8d7da; color: #842029; border: 1px solid #842029; cursor: not-allowed; opacity: 0.6; }
+        .status-cleaning { background-color: #fff3cd; color: #664d03; border: 1px solid #664d03; cursor: not-allowed; opacity: 0.8; }
+        
+        /* Containers set to white/light to ensure contrast against the background image */
+        .booking-form-section, .bg-white {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Styling for the prominent price display - BIG FONT */
+        .price-display {
+            font-size: 3rem; 
+            font-weight: 800;
+            color: #198754; 
+            border-bottom: 3px solid #198754;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        /* Style for the correction icon */
+        .correct-icon {
+            color: #198754; /* Success green */
+            margin-left: 5px;
+        }
+        /* Style for the error icon */
+        .error-icon {
+            color: #dc3545; /* Danger red */
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container my-5">
+        <header class="text-center py-4 mb-5 bg-white rounded-3 shadow-sm">
+            <h1 class="display-5 fw-bold text-dark">Starlight Hostel University Accommodation</h1>
+            <p class="lead text-primary mt-2">Find and book your perfect room effortlessly.</p>
+        </header>
+
+        <div class="row g-4 mb-5">
+           
+            <div class="col-lg-4">
+                <div class="bg-white p-4 rounded-3 shadow-sm h-100 border border-light">
+                    <h3 class="fs-4 fw-bold text-dark mb-3 border-bottom pb-2">Room Type Facilities</h3>
+                   
+                    <span class="price-display" id="current-price-display">Rs. 12000<sub class="fs-6 fw-normal text-muted">/per month (Private Base)</sub></span>
+
+                    <p id="room-type-title" class="fs-5 fw-semibold text-success mb-3">
+                        Private Room Amenities
+                    </p>
+                    <ul id="facilities-list" class="list-unstyled space-y-2 text-secondary">
+                        <li class="d-flex align-items-center mb-2">
+                            <svg class="me-2 text-success flex-shrink-0" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.46-6.353z"/></svg>
+                            Select an **Available** room number to see amenities.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="bg-white p-4 rounded-3 shadow-sm border border-light">
+                    <h3 class="fs-4 fw-bold text-dark mb-3 border-bottom pb-2">Select Your Room Number</h3>
+                    <p class="text-sm text-secondary mb-4">Click on an available room to select it.</p>
+
+                    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3" id="room-chart">
+                        <!-- Room cards will be generated here by JS -->
+                    </div>
+                   
+                    <div class="mt-4 pt-3 border-top d-flex flex-wrap gap-4 justify-content-center">
+                        <span class="d-flex align-items-center"><span class="bg-success rounded-circle me-2" style="width: 10px; height: 10px;"></span>Available</span>
+                        <span class="d-flex align-items-center"><span class="bg-danger rounded-circle me-2" style="width: 10px; height: 10px;"></span>Booked</span>
+                        <span class="d-flex align-items-center"><span class="bg-warning rounded-circle me-2" style="width: 10px; height: 10px;"></span>Cleaning</span>
+                        <span class="d-flex align-items-center"><span class="bg-primary rounded-circle me-2" style="width: 10px; height: 10px;"></span>Selected</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-3 shadow-lg booking-form-section">
+            <h3 class="fs-3 fw-bold text-primary mb-4 border-bottom pb-3">Student Accommodation Booking Form</h3>
+           
+            <form id="booking-form" action="#" method="POST" onsubmit="handleBookingSubmission(event)">
+               
+                <div class="row g-4">
+                    <div class="col-12">
+                        <label for="selectedRoomDisplay" class="form-label fs-5 fw-semibold text-dark">Your Selected Room:</label>
+                        <input type="text" id="selectedRoomDisplay" class="form-control form-control-lg bg-light text-primary fw-bold" readonly placeholder="None selected">
+                        <input type="hidden" name="roomNumber" id="roomNumber">
+                    </div>
+                   
+                    <div class="col-md-6">
+                        <label for="fullName" class="form-label">Full Name</label>
+                        <div class="input-group">
+                            <input type="text" id="fullName" name="fullName" required class="form-control" placeholder="John Doe">
+                            <span class="input-group-text bg-transparent border-0" id="fullName-icon"></span>
+                        </div>
+                    </div>
+                   
+                    <div class="col-md-6">
+                        <label for="regNumber" class="form-label">University Registration Number</label>
+                        <div class="input-group">
+                            <input type="text" id="regNumber" name="regNumber" required class="form-control" placeholder="12345678">
+                            <span class="input-group-text bg-transparent border-0" id="regNumber-icon"></span>
+                        </div>
+                    </div>
+                   
+                    <div class="col-md-6">
+                        <label for="uniEmail" class="form-label">University Email</label>
+                        <div class="input-group">
+                            <input type="email" id="uniEmail" name="uniEmail" required class="form-control" placeholder="user@university.edu">
+                            <span class="input-group-text bg-transparent border-0" id="uniEmail-icon"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="batch" class="form-label">Academic Batch / Year</label>
+                        <div class="input-group">
+                            <select id="batch" name="batch" required class="form-select">
+                                <option value="" disabled selected>Select Batch/Year...</option>
+                                <option value="2025A">2025A</option>
+                                <option value="2025B">2025B</option>
+                                <option value="2026A">2026A</option>
+                                <option value="2026B">2026B</option>
+                                <option value="2027A">2027A</option>
+                                <option value="2027B">2027B</option>
+                                <option value="2028A">2028A</option>
+                                <option value="2028B">2028B</option>
+                                <option value="2029A">2029A</option>
+                                <option value="2029B">2029B</option>
+                                <option value="Staff">Staff</option>
+                            </select>
+                            <span class="input-group-text bg-transparent border-0" id="batch-icon"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="whatsappNumber" class="form-label">WhatsApp Contact Number (Max 10 Digits)</label>
+                        <div class="input-group">
+                            <input type="tel" id="whatsappNumber" name="whatsappNumber" required class="form-control" placeholder="77 XXXXXXX" pattern="[0-9]{10}" maxlength="10" title="10-digit phone number">
+                            <span class="input-group-text bg-transparent border-0" id="whatsappNumber-icon"></span>
+                        </div>
+                    </div>
+                   
+                    <div class="col-md-6">
+                        <label for="address" class="form-label">Current Address</label>
+                        <div class="input-group">
+                            <input type="text" id="address" name="address" required class="form-control" placeholder="123 Main Street, City">
+                            <span class="input-group-text bg-transparent border-0" id="address-icon"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="checkInDate" class="form-label">Check-in Date</label>
+                        <div class="input-group">
+                            <input type="date" id="checkInDate" name="checkInDate" required class="form-control">
+                            <span class="input-group-text bg-transparent border-0" id="checkInDate-icon"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="checkOutDate" class="form-label">Check-out Date</label>
+                        <div class="input-group">
+                            <input type="date" id="checkOutDate" name="checkOutDate" required class="form-control">
+                            <span class="input-group-text bg-transparent border-0" id="checkOutDate-icon"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="message" class="form-label">Special Requests (Optional)</label>
+                        <textarea id="message" name="message" rows="3" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                <div id="form-message" class="mt-4 alert alert-info text-center fw-semibold d-none" role="alert"></div>
+
+                <div class="mt-4 text-center">
+                    <button type="submit" class="btn btn-primary btn-lg w-100 w-md-50 py-3 rounded-pill shadow-sm">
+                        SUBMIT BOOKING REQUEST
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        // Define room prices and data
+        const PRICES = {
+            'Dorm': 6000,
+            'Private': 12000 
+        };
+       
+        // Inject PHP data here
+        const roomsData = <?php echo $roomsDataJSON; ?>;
+
+        const facilities = {
+            'Private': [
+                'Exclusive Single Room',
+                'Private Bathroom & Hot Shower',
+                'Study Desk & Chair',
+                'Air Conditioning (AC)',
+                'Mini-Fridge & Kettle',
+                'Premium Linen & Turndown Service'
+            ]
+        };
+
+        let selectedRoom = null;
+
+        // --- UI Functions (Render Chart, Select Room, Update Facilities) ---
+        function renderRoomChart() {
+            const chart = document.getElementById('room-chart');
+            chart.innerHTML = '';
+            roomsData.forEach(room => {
+                const isAvailable = room.status === 'available';
+                let statusClass = `status-${room.status}`;
+                if (room.number === selectedRoom) { statusClass = 'selected'; }
+
+                const roomCard = document.createElement('div');
+                roomCard.className = `col room-card shadow-sm ${statusClass}`;
+                roomCard.setAttribute('data-room', room.number);
+                roomCard.setAttribute('data-type', room.type);
+               
+                if (isAvailable) {
+                    roomCard.onclick = () => selectRoom(room.number, room.type);
+                }
+
+                roomCard.innerHTML = `
+                    <p class="fs-5 fw-bold mb-0">Room ${room.number}</p>
+                    <p class="text-xs capitalize font-weight-light mb-1">${room.type}</p>
+                    <p class="small text-muted mb-0">${room.status === 'booked' ? 'Booked' : room.status === 'cleaning' ? 'Cleaning' : `Rs. ${room.price}/mo`}</p>
+                `;
+               
+                const colDiv = document.createElement('div');
+                colDiv.className = 'col';
+                colDiv.appendChild(roomCard);
+                chart.appendChild(colDiv);
+            });
+        }
+
+        function selectRoom(roomNumber, roomType) {
+            const room = roomsData.find(r => r.number === roomNumber);
+            if (room.status !== 'available') return; 
+
+            selectedRoom = roomNumber;
+
+            document.getElementById('roomNumber').value = roomNumber;
+            document.getElementById('selectedRoomDisplay').value = `Room ${roomNumber} (${roomType}) - Rs. ${room.price}/month`;
+           
+            renderRoomChart();
+            updateFacilities(roomType, room.price);
+        }
+
+        function updateFacilities(type, price) {
+            const list = document.getElementById('facilities-list');
+            const title = document.getElementById('room-type-title');
+            const priceDisplay = document.getElementById('current-price-display');
+            list.innerHTML = '';
+           
+            title.textContent = `${type} Room Amenities`;
+            priceDisplay.innerHTML = `Rs. ${price}<sub class="fs-6 fw-normal text-muted">/per month (${type} Base)</sub>`;
+
+            facilities['Private'].forEach(facility => { 
+                const listItem = document.createElement('li');
+                listItem.className = 'd-flex align-items-center mb-2';
+                listItem.innerHTML = `
+                    <svg class="me-2 text-success flex-shrink-0" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.46-6.353z"/></svg>
+                    ${facility}
+                `;
+                list.appendChild(listItem);
+            });
+        }
+
+        // --- Validation Functions ---
+        function setInputState(inputElement, iconElement, isValid) {
+            iconElement.innerHTML = ''; 
+            inputElement.classList.remove('is-valid', 'is-invalid');
+
+            if (inputElement.value.trim() === '' || inputElement.value === inputElement.getAttribute('data-default-value')) {
+                return;
+            }
+
+            if (isValid) {
+                iconElement.innerHTML = '<i class="bi bi-check-circle-fill correct-icon"></i>';
+                inputElement.classList.add('is-valid');
+            } else {
+                iconElement.innerHTML = '<i class="bi bi-x-circle-fill error-icon"></i>';
+                inputElement.classList.add('is-invalid');
+            }
+        }
+
+        function addValidationIconListener(inputId, isValid = (val) => val.trim() !== '') {
+            const inputElement = document.getElementById(inputId);
+            const iconElement = document.getElementById(`${inputId}-icon`);
+
+            if (!inputElement || !iconElement) return;
+
+            const updateState = () => {
+                const validity = isValid(inputElement.value);
+                setInputState(inputElement, iconElement, validity);
+
+                if (inputId === 'checkInDate' || inputId === 'checkOutDate') {
+                    checkDateValidity();
+                }
+            };
+
+            inputElement.addEventListener('input', updateState);
+            inputElement.addEventListener('change', updateState);
+            updateState();
+        }
+
+        function checkDateValidity() {
+            const checkInInput = document.getElementById('checkInDate');
+            const checkOutInput = document.getElementById('checkOutDate');
+            const checkInIcon = document.getElementById('checkInDate-icon');
+            const checkOutIcon = document.getElementById('checkOutDate-icon');
+            
+            const inValue = checkInInput.value;
+            const outValue = checkOutInput.value;
+
+            if (inValue && outValue) {
+                const inDate = new Date(inValue);
+                const outDate = new Date(outValue);
+                const datesAreValid = outDate > inDate;
+
+                setInputState(checkInInput, checkInIcon, datesAreValid);
+                setInputState(checkOutInput, checkOutIcon, datesAreValid);
+            } else {
+                setInputState(checkInInput, checkInIcon, inValue.trim() !== '');
+                setInputState(checkOutInput, checkOutIcon, outValue.trim() !== '');
+            }
+        }
+
+
+        /**
+         * UPDATED: Handles form submission, performs validation, and uses Fetch API to send data to PHP.
+         */
+        async function handleBookingSubmission(event) {
+            event.preventDefault(); 
+
+            // 1. Initial Validation Setup
+            const fields = ['fullName', 'regNumber', 'uniEmail', 'batch', 'whatsappNumber', 'address', 'checkInDate', 'checkOutDate'];
+            fields.forEach(field => document.getElementById(field).dispatchEvent(new Event('change')));
+            
+            checkDateValidity();
+
+            const formMessage = document.getElementById('form-message');
+            const submitButton = document.querySelector('button[type="submit"]');
+            
+            formMessage.classList.add('d-none');
+            formMessage.classList.remove('alert-danger', 'alert-success', 'alert-info');
+
+            const roomNum = document.getElementById('roomNumber').value;
+            const fullName = document.getElementById('fullName').value.trim();
+            const checkInDate = document.getElementById('checkInDate').value;
+            const checkOutDate = document.getElementById('checkOutDate').value;
+            const whatsappNumber = document.getElementById('whatsappNumber').value;
+           
+            let errorMessage = null;
+
+            // 2. Main Validation Checks
+            if (!roomNum) {
+                errorMessage = "❌ Error: Please **select an available room number** from the chart above before submitting.";
+            } else if (!checkInDate || !checkOutDate || new Date(checkOutDate) <= new Date(checkInDate)) {
+                errorMessage = "❌ Error: Please ensure both **Check-in** and **Check-out Dates** are selected, and Check-out is after Check-in.";
+            } else if (!fullName || !/^[A-Za-z\s]+$/.test(fullName)) {
+                 errorMessage = "❌ Error: **Full Name** must contain only letters and spaces (no numbers or special characters)."; 
+            } else if (!document.getElementById('uniEmail').value.trim() || !document.getElementById('regNumber').value.trim() || !document.getElementById('batch').value || !document.getElementById('address').value.trim()) {
+                errorMessage = "❌ Error: Please ensure all required fields (Registration Number, Email, Batch, Address) are filled.";
+            } else if (!/^\d{10}$/.test(whatsappNumber)) {
+                errorMessage = "❌ Error: **WhatsApp Contact Number** must be exactly 10 digits and contain only numbers.";
+            }
+
+            if (errorMessage) {
+                // Validation failed
+                formMessage.textContent = errorMessage;
+                formMessage.classList.add('alert-danger');
+                formMessage.classList.remove('d-none');
+                return;
+            }
+
+            // 3. Validation passed - Prepare and send data to PHP
+            
+            const formData = new FormData(document.getElementById('booking-form'));
+            
+            // Display 'Processing' message
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting to Server...';
+            formMessage.textContent = `⏳ Submitting booking for Room ${roomNum}...`;
+            formMessage.classList.add('alert-info');
+            formMessage.classList.remove('d-none', 'alert-danger');
+
+            try {
+                // **THE KEY CHANGE: Using fetch to submit data to PHP**
+                const response = await fetch('submit_booking.php', {
+                    method: 'POST',
+                    body: formData // FormData automatically handles the form fields
+                });
+
+                const result = await response.json(); // PHP must return JSON
+
+                if (result.success) {
+                    // Booking saved successfully
+                    formMessage.textContent = `✅ Success! Booking for Room ${roomNum} (ID: ${result.booking_id}) confirmed. Redirecting to payment...`;
+                    formMessage.classList.remove('alert-info');
+                    formMessage.classList.add('alert-success');
+                    
+                    // Optional: Redirect to payment page with booking ID
+                    setTimeout(() => {
+                         // window.location.href = `payment_page.html?bookingId=${result.booking_id}`; 
+                         submitButton.textContent = 'BOOKING SAVED!';
+                    }, 2000); 
+
+                } else {
+                    // Database error or room status change detected by PHP
+                    formMessage.textContent = `❌ Booking Failed: ${result.message}`;
+                    formMessage.classList.remove('alert-info', 'alert-success');
+                    formMessage.classList.add('alert-danger');
+                    submitButton.textContent = 'SUBMISSION FAILED. Try Again.';
+                }
+
+            } catch (error) {
+                formMessage.textContent = `🚨 A network error occurred: ${error.message}`;
+                formMessage.classList.remove('alert-info', 'alert-success');
+                formMessage.classList.add('alert-danger');
+            } finally {
+                submitButton.disabled = false;
+                if(formMessage.classList.contains('alert-danger')) {
+                     submitButton.textContent = 'SUBMIT BOOKING REQUEST';
+                }
+            }
+        }
+
+        // Initialize the page
+        window.onload = () => {
+            renderRoomChart();
+            updateFacilities('Private', PRICES['Private']); 
+           
+            addValidationIconListener('fullName', (val) => /^[A-Za-z\s]+$/.test(val.trim())); 
+            addValidationIconListener('regNumber');
+            addValidationIconListener('uniEmail', (val) => val.trim() !== '' && /.+@.+\..+/.test(val)); 
+            addValidationIconListener('batch');
+            addValidationIconListener('whatsappNumber', (val) => /^\d{10}$/.test(val)); 
+            addValidationIconListener('address');
+
+            document.getElementById('checkInDate').addEventListener('change', checkDateValidity);
+            document.getElementById('checkOutDate').addEventListener('change', checkDateValidity);
+            
+            checkDateValidity(); 
+        };
+    </script>
+</body>
+</html>

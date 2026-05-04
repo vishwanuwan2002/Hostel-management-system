@@ -1,0 +1,12 @@
+{
+  "name": "royal-master/auth-integration",
+  "description": "Optional Google OAuth integration for the Royal theme (demo).",
+  "require": {
+    "google/apiclient": "^2.13"
+  },
+  "autoload": {
+    "psr-4": {
+      "Royal\\": "inc/"
+    }
+  }
+}

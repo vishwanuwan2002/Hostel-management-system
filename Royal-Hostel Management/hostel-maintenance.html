@@ -1,0 +1,1323 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="icon" href="image/favicon.png" type="image/png">
+        <title>Hostel Maintenance - StayEasy</title>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="css/bootstrap.css">
+        <link rel="stylesheet" href="vendors/linericon/style.css">
+        <link rel="stylesheet" href="css/font-awesome.min.css">
+        <link rel="stylesheet" href="vendors/bootstrap-datepicker/bootstrap-datetimepicker.min.css">
+        <link rel="stylesheet" href="vendors/nice-select/css/nice-select.css">
+        <link rel="stylesheet" href="vendors/owl-carousel/owl.carousel.min.css">
+        <!-- main css -->
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/responsive.css">
+        <style>
+            .maintenance-container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 15px;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #333;
+                margin-bottom: 40px;
+                text-align: center;
+                position: relative;
+                padding-bottom: 20px;
+            }
+
+            .section-title::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 60px;
+                height: 4px;
+                background: linear-gradient(135deg, #1b1b1e 0%, #333b82 100%);
+                border-radius: 2px;
+            }
+
+            /* Owl Carousel Dots Customization */
+            .header-slider .owl-dots {
+                position: absolute;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                z-index: 10;
+            }
+
+            .header-slider .owl-dot span {
+                display: block;
+                width: 12px;
+                height: 12px;
+                background: rgba(255, 255, 255, 0.5);
+                border-radius: 50%;
+                transition: all 0.3s ease;
+            }
+
+            .header-slider .owl-dot.active span {
+                background: #f3c300; /* Yellow color */
+                transform: scale(1.2);
+                box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            }
+
+            .header-slider .owl-dot:hover span {
+                background: rgba(243, 195, 0, 0.7);
+            }
+
+            /* Maintenance Categories Section */
+            .maintenance-categories {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 30px;
+                margin-top: 60px;
+                margin-bottom: 130px;
+            }
+
+            .category-card {
+                background: white;
+                border-radius: 15px;
+                padding: 40px 30px;
+                text-align: center;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+                transition: all 0.3s ease;
+                border-top: 4px solid transparent;
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                min-height: 380px;
+                justify-content: space-between;
+            }
+
+            .category-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+                border-top-color: #667eea;
+            }
+
+            .category-icon {
+                font-size: 3.5rem;
+                margin-bottom: 20px;
+                color: #667eea;
+                height: 80px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .category-card h3 {
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 15px;
+                color: #333;
+                min-height: 60px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .category-card p {
+                color: #666;
+                font-size: 0.95rem;
+                line-height: 1.6;
+                margin-bottom: 25px;
+                min-height: 60px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0 10px;
+            }
+
+            .category-btn {
+                background: linear-gradient(135deg, #f31212 0%, #f38d8a 100%);
+                color: white;
+                border: none;
+                padding: 12px 30px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                display: inline-block;
+                text-decoration: none;
+            }
+
+            .category-btn:hover {
+                transform: scale(1.05);
+                box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            }
+
+            /* Maintenance Schedule Table */
+            .schedule-section {
+                background: white;
+                border-radius: 15px;
+                padding: 40px;
+                margin-bottom: 90px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            }
+
+            .schedule-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 30px;
+            }
+
+            .schedule-table thead {
+                background: linear-gradient(135deg, #2b2b4b 0%, #333b82 100%);
+                color: white;
+            }
+
+            .schedule-table th {
+                padding: 18px;
+                text-align: left;
+                font-weight: 600;
+                font-size: 0.95rem;
+            }
+
+            .schedule-table td {
+                padding: 16px 18px;
+                border-bottom: 1px solid #e9ecef;
+                color: #555;
+            }
+
+            .schedule-table tbody tr:hover {
+                background-color: #f8f9fa;
+            }
+
+            .status-badge {
+                display: inline-block;
+                padding: 6px 15px;
+                border-radius: 20px;
+                font-size: 0.85rem;
+                font-weight: 600;
+            }
+
+            .status-completed {
+                background-color: #d4edda;
+                color: #155724;
+            }
+
+            .status-pending {
+                background-color: #fff3cd;
+                color: #856404;
+            }
+
+            .status-inprogress {
+                background-color: #cce5ff;
+                color: #004085;
+            }
+
+            /* Tips and Best Practices */
+            .tips-section {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 30px;
+                margin-bottom: 60px;
+                
+            }
+
+            .tip-card {
+                background: white;
+                border-radius: 12px;
+                padding: 30px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+                border-left: 5px solid #667eea;
+            }
+
+            .tip-card h4 {
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: #333;
+                margin-bottom: 15px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .tip-card i {
+                color: #667eea;
+                font-size: 1.3rem;
+            }
+
+            .tip-card p {
+                color: #666;
+                line-height: 1.7;
+                font-size: 0.95rem;
+            }
+
+            /* Report Form */
+            .report-section {
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+                border-radius: 15px;
+                padding: 50px;
+                margin-bottom: 60px;
+                margin-top: 100px;
+                border: 2px solid rgba(102, 126, 234, 0.2);
+            }
+
+            .form-group {
+                margin-bottom: 25px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 10px;
+                color: #333;
+                font-weight: 600;
+                font-size: 0.95rem;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                width: 100%;
+                padding: 12px 15px;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                font-size: 0.95rem;
+                transition: all 0.3s ease;
+            }
+
+            .form-group input::placeholder,
+            .form-group textarea::placeholder {
+                color: #b0b0b0;
+                font-weight: 300;
+            }
+
+            .form-group input:focus,
+            .form-group textarea:focus,
+            .form-group select:focus {
+                outline: none;
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+
+            /* Nice Select Styling */
+            .nice-select .current {
+                color: #b0b0b0 !important; /* Placeholder color */
+                font-weight: 300;
+            }
+            
+            .nice-select.has-value .current {
+                color: #222 !important; /* Selected color */
+                font-weight: 600;
+            }
+            
+            /* Ensure native select also has dark text */
+            .form-group select {
+                color: #222;
+                font-weight: 600;
+            }
+
+            .form-group textarea {
+                resize: vertical;
+                min-height: 120px;
+            }
+
+            .form-row {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+            }
+
+            .submit-btn {
+                background: linear-gradient(135deg, #667eea 0%, #4e4994 100%);
+                color: white;
+                border: none;
+                padding: 15px 40px;
+                border-radius: 8px;
+                font-size: 1rem;
+                font-weight: 700;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .submit-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            }
+
+            /* Emergency Contact */
+            .emergency-section {
+                background: url('image/Emergency.png') no-repeat center center;
+                background-size: cover;
+                position: relative;
+                z-index: 1;
+                border-left: 5px solid #770303d7;
+                padding: 30px;
+                border-radius: 8px;
+                margin-bottom: 110px;
+                overflow: hidden;
+            }
+
+            .emergency-section::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(255, 255, 255, 0.283);
+                z-index: -1;
+            }
+
+            .emergency-section h3 {
+                color: #770303d7;
+                margin-bottom: 15px;
+                font-weight: 700;
+            }
+
+            .emergency-section p {
+                color: #0a0a09c5;
+                margin-bottom: 10px;
+                font-size: 0.95rem;
+            }
+
+            .emergency-contact {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
+                margin-top: 20px;
+            }
+
+            .contact-info {
+                background: white;
+                padding: 15px;
+                border-radius: 8px;
+                text-align: center;
+            }
+
+            .contact-info strong {
+                color: #333;
+                display: block;
+                margin-bottom: 5px;
+            }
+
+            .contact-info span {
+                color: #667eea;
+                font-size: 0.9rem;
+            }
+
+            /* FAQ Section */
+            .faq-section {
+                margin-bottom: 60px;
+            }
+
+            .faq-item {
+                background: white;
+                margin-bottom: 15px;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+                overflow: hidden;
+            }
+
+            .faq-question {
+                padding: 20px;
+                background: #f8f9fa;
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-weight: 600;
+                color: #333;
+                transition: all 0.3s ease;
+            }
+
+            .faq-question:hover {
+                background: #e9ecef;
+            }
+
+            .faq-question i {
+                color: #667eea;
+                transition: transform 0.3s ease;
+            }
+
+            .faq-answer {
+                padding: 20px;
+                color: #666;
+                line-height: 1.8;
+                display: none;
+                border-top: 1px solid #e9ecef;
+            }
+
+            .faq-item.active .faq-answer {
+                display: block;
+            }
+
+            .faq-item.active .faq-question i {
+                transform: rotate(180deg);
+            }
+
+            /* Footer spacing */
+            .maintenance-footer {
+                text-align: center;
+                padding: 40px 0;
+                color: #999;
+                border-top: 1px solid #e9ecef;
+            }
+
+            .maintenance-footer p {
+                margin: 0;
+            }
+
+            /* Schedule Pagination */
+            .schedule-actions {
+                text-align: center;
+                margin-top: 30px;
+            }
+
+            .view-all-btn {
+                background: linear-gradient(135deg, #47d34e 0%, #95ebab 100%);
+                color: white;
+                border: none;
+                padding: 12px 35px;
+                border-radius: 8px;
+                font-size: 0.95rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .view-all-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            }
+
+            /* Modal Styles */
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 10000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                animation: fadeIn 0.3s ease;
+            }
+
+            .modal-content {
+                background-color: #fefefe;
+                margin: 5% auto;
+                padding: 30px;
+                border-radius: 15px;
+                width: 90%;
+                max-width: 1000px;
+                max-height: 80vh;
+                overflow-y: auto;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            }
+
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #e9ecef;
+            }
+
+            .modal-header h2 {
+                font-size: 1.8rem;
+                font-weight: 700;
+                color: #333;
+                margin: 0;
+            }
+
+            .close-btn {
+                background: none;
+                border: none;
+                font-size: 28px;
+                font-weight: bold;
+                color: #999;
+                cursor: pointer;
+                padding: 0;
+                width: 30px;
+                height: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+            }
+
+            .close-btn:hover {
+                color: #333;
+                transform: rotate(90deg);
+            }
+
+            .modal-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+
+            .modal-table thead {
+                background: linear-gradient(135deg, #2b2b4b 0%, #333b82 100%);
+                color: white;
+            }
+
+            .modal-table th {
+                padding: 18px;
+                text-align: left;
+                font-weight: 600;
+                font-size: 0.95rem;
+            }
+
+            .modal-table td {
+                padding: 16px 18px;
+                border-bottom: 1px solid #e9ecef;
+                color: #555;
+            }
+
+            .modal-table tbody tr:hover {
+                background-color: #f8f9fa;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .schedule-table {
+                    font-size: 0.85rem;
+                }
+
+                .schedule-table th,
+                .schedule-table td {
+                    padding: 10px;
+                }
+
+                .report-section {
+                    padding: 30px;
+                }
+            }
+
+            /* Header Slider Styles */
+            .header-slider {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+            }
+            
+            .header-slider .owl-stage-outer,
+            .header-slider .owl-stage,
+            .header-slider .owl-item {
+                height: 100%;
+            }
+
+            .header-slider-item {
+                height: 100%;
+                width: 100%;
+                background-size: cover;
+                background-position: center;
+                opacity: 0.5;
+            }
+        </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header_area">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <a class="navbar-brand logo_h" href="index.html"><img src="image/Logo.png" alt=""></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+                    <ul class="nav navbar-nav menu_nav ml-auto">
+                        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li> 
+                        <li class="nav-item"><a class="nav-link" href="about.html">About us</a></li>
+                        <li class="nav-item"><a class="nav-link" href="accomodation.html">Accomodation</a></li>
+                        <li class="nav-item"><a class="nav-link" href="gallery.html">Gallery</a></li>
+                        <li class="nav-item active"><a class="nav-link" href="hostel-maintenance.html">Maintenance</a></li>
+                        <li class="nav-item submenu dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Blog</a>
+                            <ul class="dropdown-menu">
+                                <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                    </ul>
+                </div> 
+            </nav>
+        </div>
+    </header>
+    <!--================Header Area =================-->
+    
+    <!--================Breadcrumb Area =================-->
+    <section class="breadcrumb_area">
+        <div class="header-slider owl-carousel">
+            <div class="header-slider-item" style="background-image: url('image/hostel-maintain/maintain-01.jpg');"></div>
+            <div class="header-slider-item" style="background-image: url('image/hostel-maintain/maintain-02.jpg');"></div>
+            <div class="header-slider-item" style="background-image: url('image/hostel-maintain/maintain-03.jpg');"></div>
+            <div class="header-slider-item" style="background-image: url('image/hostel-maintain/maintain-04.jpg');"></div>
+        </div>
+        <div class="container">
+            <div class="page-cover text-center">
+                <h2 class="page-cover-tittle">Hostel Maintenance</h2>
+                <ol class="breadcrumb">
+                    <li><a href="index.html">Home</a></li>
+                    <li class="active">Maintenance</li>
+                </ol>
+            </div>
+        </div>
+    </section>
+    <!--================Breadcrumb Area =================-->
+
+    <!-- Main Content -->
+    <div class="maintenance-container">
+        
+        <!-- Maintenance Categories -->
+        <section class="maintenance-categories" id="mainCategories">
+            <h2 class="section-title" style="grid-column: 1 / -1;">Maintenance Categories</h2>
+            
+            <div class="category-card">
+                <div class="category-icon">🔧</div>
+                <h3>General Repairs</h3>
+                <p>Electrical, plumbing, and structural repairs for rooms and common areas.</p>
+                <button class="category-btn" onclick="scrollToForm('general-repairs')">Schedule Now</button>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon"><i class="lnr lnr-home"></i></div>
+                <h3>Bathroom Maintenance</h3>
+                <p>Cleaning, fixture repairs, and sanitation in all bathroom facilities.</p>
+                <button class="category-btn" onclick="scrollToForm('bathroom')">Schedule Now</button>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon"><i class="lnr lnr-layers"></i></div>
+                <h3>Room Cleaning</h3>
+                <p>Deep cleaning, linen changes, and room sanitization services.</p>
+                <button class="category-btn" onclick="scrollToForm('cleaning')">Schedule Now</button>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon"><i class="lnr lnr-cog"></i></div>
+                <h3>HVAC & Climate</h3>
+                <p>Heating, cooling, ventilation system maintenance and repairs.</p>
+                <button class="category-btn" onclick="scrollToForm('hvac')">Schedule Now</button>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon">💡</div>
+                <h3>Electrical Systems</h3>
+                <p>Lighting fixtures, power systems, and electrical safety checks.</p>
+                <button class="category-btn" onclick="scrollToForm('electrical')">Schedule Now</button>
+            </div>
+
+            <div class="category-card">
+                <div class="category-icon"><i class="lnr lnr-drop"></i></div>
+                <h3>Plumbing Services</h3>
+                <p>Water system repairs, leak detection, and pipe maintenance.</p>
+                <button class="category-btn" onclick="scrollToForm('plumbing')">Schedule Now</button>
+            </div>
+        </section>
+
+        <!-- Maintenance Schedule -->
+        <section class="schedule-section">
+            <h2 class="section-title">Upcoming Maintenance Schedule</h2>
+            <table class="schedule-table" id="scheduleTable">
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Location</th>
+                        <th>Scheduled Date</th>
+                        <th>Status</th>
+                        <th>Assigned To</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>HVAC System Check</td>
+                        <td>Building A - All Floors</td>
+                        <td>November 25, 2025</td>
+                        <td><span class="status-badge status-pending">Pending</span></td>
+                        <td>John Smith</td>
+                    </tr>
+                    <tr>
+                        <td>Bathroom Fixtures Inspection</td>
+                        <td>Wing B - 3rd Floor</td>
+                        <td>November 22, 2025</td>
+                        <td><span class="status-badge status-inprogress">In Progress</span></td>
+                        <td>Maria Garcia</td>
+                    </tr>
+                    <tr>
+                        <td>Electrical Panel Upgrade</td>
+                        <td>Main Lobby</td>
+                        <td>November 20, 2025</td>
+                        <td><span class="status-badge status-completed">Completed</span></td>
+                        <td>Robert Chen</td>
+                    </tr>
+                    <tr>
+                        <td>Plumbing System Check</td>
+                        <td>All Common Areas</td>
+                        <td>November 28, 2025</td>
+                        <td><span class="status-badge status-pending">Pending</span></td>
+                        <td>David Johnson</td>
+                    </tr>
+                    <tr>
+                        <td>Room Deep Clean & Sanitize</td>
+                        <td>Rooms 101-110</td>
+                        <td>November 23, 2025</td>
+                        <td><span class="status-badge status-inprogress">In Progress</span></td>
+                        <td>Sarah Williams</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="schedule-actions">
+                <button class="view-all-btn" id="viewAllBtn">View All Tasks</button>
+            </div>
+        </section>
+
+        <!-- All Tasks Modal -->
+        <div id="allTasksModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>All Maintenance Tasks</h2>
+                    <button class="close-btn" id="closeModalBtn">&times;</button>
+                </div>
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>Task</th>
+                            <th>Location</th>
+                            <th>Scheduled Date</th>
+                            <th>Status</th>
+                            <th>Assigned To</th>
+                        </tr>
+                    </thead>
+                    <tbody id="allTasksBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Emergency Contact -->
+        <div class="emergency-section">
+            <h3><i class="fa fa-exclamation-circle"></i> Emergency Maintenance</h3>
+            <p><strong>24/7 Emergency Support Available</strong></p>
+            <p>For urgent maintenance issues that cannot wait, please contact our emergency team immediately.</p>
+            <div class="emergency-contact">
+                <div class="contact-info">
+                    <strong>Phone</strong>
+                    <span>+94 123 456 789</span>
+                </div>
+                <div class="contact-info">
+                    <strong>Email</strong>
+                    <span>emergency@abcded.com</span>
+                </div>
+                <div class="contact-info">
+                    <strong>Whatsapp</strong>
+                    <span>+94 123 456 789</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Maintenance Tips -->
+        <section>
+            <h2 class="section-title">Maintenance Tips & Best Practices</h2>
+            <div class="tips-section">
+                <div class="tip-card">
+                    <h4><i class="fa fa-check-circle"></i> Regular Inspections</h4>
+                    <p>Conduct weekly inspections of all guest areas to identify potential issues early. This proactive approach prevents major problems and reduces emergency repairs.</p>
+                </div>
+
+                <div class="tip-card">
+                    <h4><i class="fa fa-check-circle"></i> Preventive Maintenance</h4>
+                    <p>Schedule regular maintenance for HVAC systems, plumbing, and electrical systems. Preventive measures save time and money in the long run.</p>
+                </div>
+
+                <div class="tip-card">
+                    <h4><i class="fa fa-check-circle"></i> Documentation</h4>
+                    <p>Keep detailed records of all maintenance activities, repairs, and inspections. This helps track the history of each area and plan future maintenance.</p>
+                </div>
+
+                <div class="tip-card">
+                    <h4><i class="fa fa-check-circle"></i> Staff Training</h4>
+                    <p>Ensure all staff members are trained in basic maintenance procedures and safety protocols. Well-trained staff can handle minor issues quickly.</p>
+                </div>
+
+                <div class="tip-card">
+                    <h4><i class="fa fa-check-circle"></i> Budget Planning</h4>
+                    <p>Allocate adequate budget for maintenance. A small investment now can prevent costly emergency repairs later.</p>
+                </div>
+
+                <div class="tip-card">
+                    <h4><i class="fa fa-check-circle"></i> Vendor Relationships</h4>
+                    <p>Build strong relationships with reliable maintenance vendors and contractors. This ensures quick response times during emergencies.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Report Maintenance Issue Form -->
+        <section class="report-section">
+            <h2 class="section-title">Report a Maintenance Issue</h2>
+            <form id="maintenanceForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="room">Room Number</label>
+                        <input type="text" id="room" name="room" placeholder="Enter room number (if applicable)">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Maintenance Category</label>
+                    <select id="category" name="category" required>
+                        <option value="">Select a category...</option>
+                        <option value="general-repairs">General Repairs</option>
+                        <option value="bathroom">Bathroom Maintenance</option>
+                        <option value="cleaning">Room Cleaning</option>
+                        <option value="hvac">HVAC & Climate</option>
+                        <option value="electrical">Electrical Systems</option>
+                        <option value="plumbing">Plumbing Services</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="priority">Priority Level</label>
+                    <select id="priority" name="priority" required>
+                        <option value="">Select priority...</option>
+                        <option value="low">Low (Can wait a few days)</option>
+                        <option value="medium">Medium (Within 24-48 hours)</option>
+                        <option value="high">High (Within 24 hours)</option>
+                        <option value="emergency">Emergency (Immediate attention)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Issue Description</label>
+                    <textarea id="description" name="description" placeholder="Please describe the maintenance issue in detail..." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fa fa-paper-plane"></i> Submit Report
+                </button>
+            </form>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>How do I report a maintenance issue?</span>
+                    <i class="fa fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    You can report a maintenance issue by filling out the "Report a Maintenance Issue" form on this page. Select your issue category, provide a detailed description, and submit. Our team will contact you within 2 hours during business hours.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>What is the average response time for maintenance requests?</span>
+                    <i class="fa fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Response times vary based on priority: Low priority (3-5 business days), Medium priority (24-48 hours), High priority (within 24 hours), and Emergency (immediate response). For emergencies, call our 24/7 hotline.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Can I schedule preventive maintenance for my room?</span>
+                    <i class="fa fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes! We recommend scheduling preventive maintenance regularly. Contact our maintenance coordinator to set up a convenient time for inspections and routine maintenance in your room.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Is there a cost for maintenance services?</span>
+                    <i class="fa fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Basic maintenance and repairs are covered for all guests as part of your stay. For special requests or damage beyond normal wear and tear, additional fees may apply. Contact us for details.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Can I request a specific maintenance person or contractor?</span>
+                    <i class="fa fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    We do our best to accommodate requests for specific contractors. When submitting your request, please mention your preference, and we'll do our best to arrange it. Contact our maintenance coordinator for special requests.
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!--================ start footer Area  =================-->	
+    <footer class="footer-area section_gap">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3  col-md-6 col-sm-6">
+                    <div class="single-footer-widget">
+                        <h6 class="footer_title">About Hostel</h6>
+                        <p>Our hostel combines comfort, safety, and convenience to give students the best living experience. With quality facilities and a supportive environment, it is the ideal place to stay during your university years. </p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="single-footer-widget">
+                        <h6 class="footer_title">Navigation Links</h6>
+                        <div class="row">
+                            <div class="col-4">
+                                <ul class="list_style">
+                                    <li><a href="index.php">Home</a></li>
+                                    <li><a href="about.html">About us</a></li>
+                                    <li><a href="gallery.html">gallery</a></li>
+                                    <li><a href="blog-single.html">Blog</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-4">
+                                <ul class="list_style">
+                        
+                                    <li><a href="blog.html">Blog</a></li>
+                                    <li><a href="contact.html">Contact</a></li>
+                                </ul>
+                            </div>										
+                        </div>							
+                    </div>
+                </div>							
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="single-footer-widget">
+                        <h6 class="footer_title">Newsletter</h6>
+                        <p>Our hostel creates a homely space where students can live, learn, and grow together </p>		
+                        <div id="mc_embed_signup">
+                            <form target="_blank" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01" method="get" class="subscribe_form relative">
+                                <div class="input-group d-flex flex-row">
+                                    <input name="EMAIL" placeholder="Email Address" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email Address '" required="" type="email">
+                                    <button class="btn sub-btn"><span class="lnr lnr-location"></span></button>		
+                                </div>									
+                                <div class="mt-10 info"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="single-footer-widget instafeed">
+                        <h6 class="footer_title">InstaFeed</h6>
+                        <ul class="list_style instafeed d-flex flex-wrap">
+                            <li><img src="image/instagram/Image-01.jpg" alt="" width="70px"></li>
+                            <li><img src="image/instagram/Image-02.jpg" alt="" width="70px"></li>
+                            <li><img src="image/instagram/Image-03.jpg" alt="" width="70px"></li>
+                            <li><img src="image/instagram/Image-04.jpg" alt="" width="70px"></li>
+                            <li><img src="image/instagram/Image-05.jpg" alt="" width="70px"></li>
+                            <li><img src="image/instagram/Image-06.jpg" alt="" width="70px"></li>
+                            <li><img src="image/instagram/Image-07.jpg" alt="" width="70px"></li>
+                            <li><img src="image/instagram/Image-08.jpg" alt="" width="70px"></li>
+                        </ul>
+                    </div>
+                </div>						
+            </div>
+            <div class="border_line"></div>
+            <div class="row footer-bottom d-flex justify-content-between align-items-center">
+                <p class="col-lg-8 col-sm-12 footer-text m-0"><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This website made with <i class="fa fa-heart-o" aria-hidden="true"></i> Group 15 
+<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+                <div class="col-lg-4 col-sm-12 footer-social">
+                    <a href="#"><i class="fa fa-facebook"></i></a>
+                    <a href="#"><i class="fa fa-twitter"></i></a>
+                    <a href="#"><i class="fa fa-dribbble"></i></a>
+                    <a href="#"><i class="fa fa-behance"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!--================ End footer Area  =================-->
+
+    <!-- Scripts -->
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/popper.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="vendors/owl-carousel/owl.carousel.min.js"></script>
+    <script src="js/jquery.ajaxchimp.min.js"></script>
+    <script src="vendors/bootstrap-datepicker/bootstrap-datetimepicker.min.js"></script>
+    <script src="vendors/nice-select/js/jquery.nice-select.js"></script>
+    <script src="js/mail-script.js"></script>
+    <script src="js/stellar.js"></script>
+    <script src="vendors/lightbox/simpleLightbox.min.js"></script>
+    <script src="js/custom.js"></script>
+    <script>
+        // Initialize Header Slider
+        if ($('.header-slider').length) {
+            $('.header-slider').owlCarousel({
+                loop: true,
+                margin: 0,
+                items: 1,
+                autoplay: true,
+                autoplayTimeout: 3000,
+                smartSpeed: 500,
+                nav: false,
+                dots: true
+            });
+        }
+
+        // Category name mapping
+        const categoryNames = {
+            'general-repairs': 'General Repairs',
+            'bathroom': 'Bathroom Maintenance',
+            'cleaning': 'Room Cleaning',
+            'hvac': 'HVAC & Climate',
+            'electrical': 'Electrical Systems',
+            'plumbing': 'Plumbing Services',
+            'other': 'Other'
+        };
+
+        // Calculate scheduled date based on priority level
+        function calculateScheduledDate(priority) {
+            const today = new Date(2025, 10, 20); // November 20, 2025 (as per context)
+            let daysToAdd = 0;
+            
+            switch(priority) {
+                case 'low':
+                    daysToAdd = 3; // Few days - using 3 days
+                    break;
+                case 'medium':
+                    daysToAdd = 2; // 24-48 hours - using 48 hours (2 days)
+                    break;
+                case 'high':
+                    daysToAdd = 1; // 24 hours (1 day)
+                    break;
+                case 'emergency':
+                    daysToAdd = 0; // Immediate - today
+                    break;
+                default:
+                    daysToAdd = 0;
+            }
+            
+            const scheduledDate = new Date(today);
+            scheduledDate.setDate(scheduledDate.getDate() + daysToAdd);
+            
+            // Format date as "Month Day, Year"
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return scheduledDate.toLocaleDateString('en-US', options);
+        }
+
+        // Handle form submission
+        document.getElementById('maintenanceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+
+            fetch('submit_maintenance.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    const alertDiv = document.createElement('div');
+                    alertDiv.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: #d4edda;
+                        color: #155724;
+                        padding: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                        z-index: 9999;
+                        animation: slideIn 0.3s ease;
+                    `;
+                    alertDiv.innerHTML = '<i class="fa fa-check-circle"></i> ' + data.message;
+                    document.body.appendChild(alertDiv);
+                    
+                    // Reset form
+                    document.getElementById('maintenanceForm').reset();
+                    if (typeof jQuery !== 'undefined' && jQuery.fn.niceSelect) {
+                        jQuery('#category').niceSelect('update');
+                        jQuery('#priority').niceSelect('update');
+                    }
+                    
+                    // Remove message after 5 seconds
+                    setTimeout(() => {
+                        alertDiv.remove();
+                    }, 5000);
+                    
+                    // Refresh the table
+                    loadMaintenanceTasks();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while submitting the request.');
+            });
+        });
+
+        // Function to load tasks from the server
+        function loadMaintenanceTasks() {
+            fetch('get_maintenance_tasks.php')
+            .then(response => response.json())
+            .then(tasks => {
+                const scheduleTableBody = document.getElementById('scheduleTable').getElementsByTagName('tbody')[0];
+                const allTasksBody = document.getElementById('allTasksBody');
+                
+                scheduleTableBody.innerHTML = '';
+                allTasksBody.innerHTML = '';
+
+                tasks.forEach((task, index) => {
+                    let statusClass = 'status-pending';
+                    if (task.status === 'In Progress') statusClass = 'status-inprogress';
+                    else if (task.status === 'Completed') statusClass = 'status-completed';
+
+                    const rowHtml = `
+                        <td>${task.task}</td>
+                        <td>${task.location}</td>
+                        <td>${task.date}</td>
+                        <td><span class="status-badge ${statusClass}">${task.status}</span></td>
+                        <td>${task.assigned_to}</td>
+                    `;
+
+                    // Add to modal table (all tasks)
+                    const modalRow = document.createElement('tr');
+                    modalRow.innerHTML = rowHtml;
+                    allTasksBody.appendChild(modalRow);
+
+                    // Add to main table (limit to 6)
+                    if (index < 6) {
+                        const mainRow = document.createElement('tr');
+                        mainRow.innerHTML = rowHtml;
+                        scheduleTableBody.appendChild(mainRow);
+                    }
+                });
+            })
+            .catch(error => console.error('Error loading tasks:', error));
+        }
+
+        // View All Tasks Modal
+        document.getElementById('viewAllBtn').addEventListener('click', function() {
+            document.getElementById('allTasksModal').style.display = 'block';
+        });
+
+        // Close modal when X button is clicked
+        document.getElementById('closeModalBtn').addEventListener('click', function() {
+            document.getElementById('allTasksModal').style.display = 'none';
+        });
+
+        // Close modal when clicking outside of it
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('allTasksModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Initialize table display on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            loadMaintenanceTasks();
+
+            // Handle nice-select color change
+            if (typeof jQuery !== 'undefined') {
+                jQuery('select').on('change', function() {
+                    var $niceSelect = jQuery(this).next('.nice-select');
+                    if (jQuery(this).val() !== "") {
+                        $niceSelect.addClass('has-value');
+                    } else {
+                        $niceSelect.removeClass('has-value');
+                    }
+                });
+                
+                // Initial check to set correct state
+                setTimeout(function() {
+                    jQuery('select').trigger('change');
+                }, 100);
+            }
+        });
+
+        // Scroll to form when category button clicked
+        function scrollToForm(category) {
+            const categorySelect = document.getElementById('category');
+            categorySelect.value = category;
+            // Trigger nice-select update if it's initialized
+            if (jQuery && jQuery.fn.niceSelect) {
+                jQuery(categorySelect).niceSelect('update');
+                jQuery(categorySelect).trigger('change'); // Update color
+            }
+            document.getElementById('maintenanceForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // FAQ toggle functionality
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', function() {
+                const item = this.parentElement;
+                
+                // Close other items
+                document.querySelectorAll('.faq-item').forEach(el => {
+                    if (el !== item) {
+                        el.classList.remove('active');
+                    }
+                });
+                
+                // Toggle current item
+                item.classList.toggle('active');
+            });
+        });
+
+        // Smooth scroll animation
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

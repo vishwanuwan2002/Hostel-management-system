@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="image/favicon.png" type="image/png">
+    <title>Admin Register - Admin Register</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #0a1849;
+        }
+        body {
+            font-family: "Poppins", sans-serif;
+            background-color: #f4f7fa;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 900px;
+            max-width: 95%;
+            display: flex;
+            min-height: 600px;
+        }
+        .login-image {
+            flex: 1;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .login-image h2 { font-weight: 700; margin-bottom: 15px; }
+        .login-image p { opacity: 0.9; font-size: 0.95rem; line-height: 1.6; }
+        
+        .login-form {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .brand-logo {
+            width: 50px;
+            height: 50px;
+            background: var(--secondary-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .form-title { font-size: 1.8rem; font-weight: 700; color: #333; margin-bottom: 5px; }
+        .form-subtitle { color: #888; margin-bottom: 30px; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-control {
+            height: 45px;
+            border-radius: 8px;
+            border: 1px solid #e1e1e1;
+            padding-left: 20px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+        }
+        
+        .btn-login {
+            background: var(--secondary-color);
+            color: white;
+            height: 50px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        .btn-login:hover { background: var(--primary-color); }
+        
+        .footer-link { text-align: center; margin-top: 20px; font-size: 0.9rem; color: #666; }
+        .footer-link a { color: var(--secondary-color); font-weight: 600; text-decoration: none; }
+        
+        @media (max-width: 768px) {
+            .login-container { flex-direction: column; height: auto; }
+            .login-image { display: none; }
+            .login-form { padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-form">
+            <div class="brand-logo"><i class="fa fa-user-plus"></i></div>
+            <h3 class="form-title">Create Account</h3>
+            <p class="form-subtitle">Join the administration team.</p>
+            
+            <form action="admin-dashboard-login.html">
+                <div class="form-group">
+                    <label style="font-weight: 600; font-size: 0.9rem; color: #555;">Full Name</label>
+                    <input type="text" class="form-control" placeholder="enter your name here" required>
+                </div>
+                <div class="form-group">
+                    <label style="font-weight: 600; font-size: 0.9rem; color: #555;">Email Address</label>
+                    <input type="email" class="form-control" placeholder="enter your email here" required>
+                </div>
+                <div class="form-group">
+                    <label style="font-weight: 600; font-size: 0.9rem; color: #555;">Password</label>
+                    <input type="password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <div class="form-group">
+                    <label style="font-weight: 600; font-size: 0.9rem; color: #555;">Confirm Password</label>
+                    <input type="password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-login">Register</button>
+            </form>
+            
+            <div class="footer-link">
+                Already have an account? <a href="admin-dashboard-login.html">Login here</a>
+            </div>
+        </div>
+        <div class="login-image">
+            <h2>Join StayEasy</h2>
+            <p>Become part of the team managing the most comfortable and secure student accommodation system.</p>
+        </div>
+    </div>
+</body>
+</html>

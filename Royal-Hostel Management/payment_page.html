@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment Checkout & QR Confirmation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode.js/qrcode.min.js"></script> 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-green': '#8BC34A', 
+                        'input-border': '#E0E0E0',
+                        'hover-bg': '#f3f4f6', 
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .card-shadow {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+        }
+        /* Default input style for bordered fields */
+        .input-style {
+            /* We still need w-full inside the parent div to make it fill the fixed width */
+            @apply border-2 border-gray-500 p-3 rounded-xl transition duration-200 w-full
+                   focus:ring-2 focus:ring-primary-green focus:border-primary-green 
+                   hover:border-gray-600; 
+        }
+        
+        /* New classes for validation feedback */
+        .input-valid {
+            @apply border-primary-green; /* Green border for valid input */
+        }
+        .input-error {
+            @apply border-red-500; /* Red border for invalid input */
+        }
+        /* EXISTING STYLES */
+        .logo-box {
+            @apply flex items-center justify-center p-3 sm:p-4 bg-white rounded-xl cursor-pointer shadow-md transition-all duration-300 ease-in-out;
+            border: 2px solid transparent; 
+        }
+        .logo-box:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+        .logo-box.selected {
+            @apply shadow-xl; 
+            border-color: #8BC34A; 
+            transform: translateY(-1px) scale(1.05); 
+        }
+        .section-title {
+            @apply text-xl font-extrabold text-gray-800 border-b border-gray-200 pb-2 mb-4;
+        }
+        .custom-file-button {
+            @apply px-4 py-2 text-sm font-semibold text-white bg-primary-green rounded-lg shadow-md 
+                   hover:bg-opacity-90 transition duration-150 focus:outline-none focus:ring-2 focus:ring-primary-green focus:ring-offset-2;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4 font-sans">
+
+    <div class="w-full max-w-lg bg-white rounded-2xl card-shadow p-6 sm:p-8">
+
+        <div class="flex justify-end mb-6">
+            <button class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="mb-8 border-b border-gray-200 pb-4">
+            <div class="flex justify-between items-end">
+                <label for="total" class="text-base font-light text-gray-500 tracking-wider">
+                    Total Payment 
+                    <span id="room-info" class="text-sm text-gray-400 font-normal block mt-0.5">for Room XX</span>
+                </label>
+                <div class="text-2xl font-extrabold text-gray-800">
+                    <span id="final-price-display">Rs. 0</span>
+                    <span class="text-lg font-medium text-gray-400 ml-1">LKR</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-select-method">
+            <h2 class="text-base font-extrabold uppercase text-primary-green tracking-wider mb-6">1. Select Method </h2>
+
+            <h3 class="section-title">Credit/Debit Card</h3>
+            <div class="grid grid-cols-3 sm:grid-cols-5 gap-4">
+                <div class="logo-box selected" data-method="Card" data-provider="Visa/MasterCard">
+                    <img src="image/payment/visa_master.jpg" alt="Visa/MasterCard Logo">
+                </div>
+                <div class="logo-box" data-method="Card" data-provider="American Express">
+                    <img src="image/payment/american_express.png" alt="American Express Logo">
+                </div>
+            </div>
+
+            <h3 class="section-title mt-6">Mobile Wallet</h3>
+            <div class="grid grid-cols-3 sm:grid-cols-5 gap-4">
+                <div class="logo-box" data-method="Wallet" data-provider="Genie">
+                    <img src="image/payment/genie.png" alt="Genie Logo">
+                </div>
+                <div class="logo-box" data-method="Wallet" data-provider="EZ Cash">
+                    <img src="image/payment/EZ_cash.jpg" alt="EZ Cash Logo">
+                </div>
+                <div class="logo-box" data-method="Wallet" data-provider="mCash">
+                    <img src="image/payment/m_cash.png" alt="mCash Logo">
+                </div>
+                <div class="logo-box" data-method="Wallet" data-provider="PayGo">
+                    <img src="image/payment/pay_go.png" alt="PayGo Logo">
+                </div>
+                <div class="logo-box" data-method="Wallet" data-provider="Gov Pay">
+                    <img src="image/payment/gov_pay.png" alt="Gov Pay Logo">
+                </div>
+            </div>
+
+            <h3 class="section-title mt-6">Internet Banking</h3>
+            <div class="grid grid-cols-3 sm:grid-cols-5 gap-4 mb-8">
+                <div class="logo-box" data-method="Bank" data-provider="Sampath Bank">
+                    <img src="image/payment/sampath_bank.png" alt="Sampath Bank Logo">
+                </div>
+                <div class="logo-box" data-method="Bank" data-provider="Commercial Bank">
+                    <img src="image/payment/Comersial_bank.png" alt="Commercial Bank Logo">
+                </div>
+            </div>
+
+            <button id="nextStepBtn" class="w-full bg-primary-green text-white font-extrabold tracking-widest uppercase py-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-opacity-95 transition duration-300 focus:outline-none focus:ring-4 focus:ring-primary-green focus:ring-opacity-50 transform hover:scale-[1.005]">
+                Proceed to Payment
+            </button>
+        </div>
+
+        <form id="step-card-details" class="hidden p-6 mb-8 border border-gray-300 rounded-2xl bg-white shadow-md">
+            <h2 class="text-base font-extrabold uppercase text-primary-green tracking-wider mb-6">2. Enter <span id="paymentProviderName" class="text-gray-700 font-extrabold">Card</span> Details</h2>
+            
+            <div class="space-y-4 pb-4 mb-4 border-b border-gray-100">
+                <p class="text-sm font-bold text-gray-700 mb-2 border-b pb-1">Card Holder Name</p>
+                <div class="flex space-x-3 px-1"> 
+                    <div class="relative w-24"> 
+                        <input type="text" id="firstName" placeholder="First name" class="input-style pr-10" required pattern="[a-zA-Z\s]+" title="Only letters and spaces are allowed" maxlength="7">
+                        <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-primary-green pointer-events-none opacity-0 transition-opacity duration-300" data-valid-icon="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.704 4.032a1 1 0 011.266 1.155l-7.5 13a1 1 0 01-1.97 0l-7.5-13a1 1 0 011.266-1.155L10 12.04l6.704-7.968z" clip-rule="evenodd" />
+                        </svg>
+                        <p id="firstNameError" class="text-xs text-red-500 mt-1 hidden">❌ Must be 1-7 letters/spaces (no numbers).</p>
+                    </div>
+                    <div class="relative w-24"> 
+                        <input type="text" id="lastName" placeholder="Last name" class="input-style pr-10" required pattern="[a-zA-Z\s]+" title="Only letters and spaces are allowed" maxlength="7">
+                            <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-primary-green pointer-events-none opacity-0 transition-opacity duration-300" data-valid-icon="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.704 4.032a1 1 0 011.266 1.155l-7.5 13a1 1 0 01-1.97 0l-7.5-13a1 1 0 011.266-1.155L10 12.04l6.704-7.968z" clip-rule="evenodd" />
+                        </svg>
+                        <p id="lastNameError" class="text-xs text-red-500 mt-1 hidden">❌ Must be 1-7 letters/spaces (no numbers).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4 pb-4 mb-4 border-b border-gray-100">
+                <p class="text-sm font-bold text-gray-700 mb-2 border-b pb-1">Card Information</p>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div class="col-span-4"> 
+                        <div class="relative">
+                            <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                                    <path fill-rule="evenodd" d="M1.5 5.625c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v12.5c0 1.036-.84 1.875-1.875 1.875H3.375c-1.036 0-1.875-.84-1.875-1.875v-12.5ZM2.88 7.35c0-.65.532-1.175 1.185-1.175h15.93c.653 0 1.185.525 1.185 1.175v1.375c0 .65-.532 1.175-1.185 1.175H4.065c-.653 0-1.185-.525-1.185-1.175V7.35Zm1 5.375a.75.75 0 0 0 0 1.5h15.25a.75.75 0 0 0 0-1.5H3.88Z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <input type="text" id="cardNumber" placeholder="Card number (12 digits)" class="input-style pl-12 pr-10" required minlength="15" maxlength="15">
+                            <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-primary-green pointer-events-none opacity-0 transition-opacity duration-300" data-valid-icon="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.704 4.032a1 1 0 011.266 1.155l-7.5 13a1 1 0 01-1.97 0l-7.5-13a1 1 0 011.266-1.155L10 12.04l6.704-7.968z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="col-span-1 flex flex-col space-y-2"> 
+                         <div class="bg-gray-100 border border-gray-400 rounded-md p-1.5 text-center text-xs font-mono text-gray-700 shadow-inner">
+                            CVV: ***
+                        </div>
+                        <div class="relative">
+                            <img src="https://placehold.co/40x25/f8f8f8/333?text=CVV" alt="CVV Icon" class="absolute left-3 top-1/2 transform -translate-y-1/2 rounded pointer-events-none">
+                            <input type="password" id="cvv" placeholder="CVV" class="input-style pl-12 pr-10" required minlength="3" maxlength="4">
+                            <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-primary-green pointer-events-none opacity-0 transition-opacity duration-300" data-valid-icon="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.704 4.032a1 1 0 011.266 1.155l-7.5 13a1 1 0 01-1.97 0l-7.5-13a1 1 0 011.266-1.155L10 12.04l6.704-7.968z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4 mb-8">
+                <p class="text-sm font-bold text-gray-700 mb-2 border-b pb-1">Expiry Date</p>
+                <div class="grid grid-cols-2 gap-4 w-full md:w-1/2">
+                    <div class="relative">
+                        <select id="expiryMonth" class="input-style" required>
+                            <option value="" disabled selected>MM</option>
+                            </select>
+                    </div>
+                    <div class="relative">
+                        <select id="expiryYear" class="input-style" required>
+                            <option value="" disabled selected>YY</option>
+                            </select>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-primary-green text-white font-extrabold tracking-widest uppercase py-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-opacity-95 transition duration-300 focus:outline-none focus:ring-4 focus:ring-primary-green focus:ring-opacity-50 transform hover:scale-[1.005]">
+                Submit Secure Payment
+            </button>
+            
+            <button type="button" id="backToMethodBtnCard" class="w-full mt-4 text-sm text-gray-500 hover:text-primary-green font-semibold transition duration-150">
+                &larr; Back to Payment Methods
+            </button>
+        </form>
+        
+        <form id="step-transaction-slip" class="hidden p-6 mb-8 border border-gray-300 rounded-2xl bg-white shadow-md">
+            <h2 class="text-base font-extrabold uppercase text-primary-green tracking-wider mb-6">2. Verify <span id="slipProviderName" class="text-gray-700 font-extrabold">Payment</span></h2>
+            
+            <div class="p-4 bg-primary-green bg-opacity-10 border-l-4 border-primary-green text-gray-700 mb-6 rounded-lg shadow-md">
+                <p class="font-bold mb-2 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mr-2 text-primary-green">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13.25a.75.75 0 00-1.5 0V9h-.25a.75.75 0 000 1.5h1.5a.75.75 0 00.75-.75V5.25z" clip-rule="evenodd" />
+                    </svg>
+                    Action Required
+                </p>
+                <p class="text-sm">Please finish your payment of <strong id="slip-price-display">Rs. 0</strong> using the **<span id="slip-provider-display">Selected Method</span>** app/portal. Then, submit the transaction details.</p>
+            </div>
+
+            <div class="mb-6">
+                <label for="transactionRef" class="block text-sm font-medium text-gray-700 mb-1">Transaction Reference No. (or Mobile No.) <span class="text-red-500">*</span></label>
+                <input type="text" id="transactionRef" placeholder="e.g., TRN123456 or 07x-xxxxxxx" class="input-style" required>
+            </div>
+
+            <div class="mb-8 p-4 border border-gray-400 rounded-xl bg-gray-50 shadow-inner">
+                <label for="transactionSlip" class="block text-sm font-medium text-gray-700 mb-2">Upload Payment Slip/Screenshot (Optional)</label>
+                <div class="flex items-center space-x-3">
+                    <input type="file" id="transactionSlip" accept="image/*,.pdf" class="hidden" onchange="updateFileName(this, 'fileNameDisplay')">
+                    <button type="button" onclick="document.getElementById('transactionSlip').click()" class="custom-file-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 inline-block -mt-0.5 mr-1">
+                            <path d="M9.25 13.25a.75.75 0 00.75.75h1.25a.75.75 0 00.75-.75v-1.19c.473.197.942.427 1.41.673a.75.75 0 00.865-.187l1-1.732a.75.75 0 00-.232-1.077l-.147-.098c.355-.838.497-1.745.39-2.652L17.75 8a.75.75 0 00.75-.75v-.5a.75.75 0 00-.75-.75h-1.393c-.106-.906-.248-1.813-.603-2.652l.147-.098a.75.75 0 00.232-1.077l-1-1.732a.75.75 0 00-.865-.187c-.468.246-.937.476-1.41.673V3.75a.75.75 0 00-.75-.75h-1.25a.75.75 0 00-.75.75v1.19c-.473-.197-.942-.427-1.41-.673a.75.75 0 00-.865.187l-1 1.732a.75.75 0 00.232 1.077l.147.098c-.355.838-.497 1.745-.39 2.652L2.25 11.25a.75.75 0 00-.75.75v.5c0 .414.336.75.75.75h1.393c.106.906.248 1.813.603 2.652l-.147.098a.75.75 0 00-.232 1.077l1 1.732a.75.75 0 00.865.187c.468-.246.937-.476 1.41-.673v1.19c0 .414.336.75.75.75h1.25a.75.75 0 00.75-.75V15h.25a.75.75 0 000-1.5H9.25zM10 11.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                        </svg>
+                        Select Slip
+                    </button>
+                    <span id="fileNameDisplay" class="text-sm text-gray-600 font-medium truncate max-w-[200px]">No file chosen</span>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-primary-green text-white font-extrabold tracking-widest uppercase py-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-opacity-95 transition duration-300 focus:outline-none focus:ring-4 focus:ring-primary-green focus:ring-opacity-50 transform hover:scale-[1.005]">
+                Verify Payment & Book
+            </button>
+            
+            <button type="button" id="backToMethodBtnSlip" class="w-full mt-4 text-sm text-gray-500 hover:text-primary-green font-semibold transition duration-150">
+                &larr; Back to Payment Methods
+            </button>
+        </form>
+
+        <div id="payment-success-modal" class="hidden text-center p-6 sm:p-8 bg-primary-green bg-opacity-5 rounded-2xl border border-primary-green border-opacity-30">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-12 h-12 text-primary-green mx-auto mb-4">
+                <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.536-1.68-1.68a.75.75 0 10-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+            </svg>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Booking Confirmed!</h3>
+            <p class="text-sm text-gray-600 mb-6">Your QR code is ready. The full booking details and QR code have been **emailed to you**.</p>
+            
+            <div id="qrcode-container" class="p-4 bg-white inline-block rounded-xl shadow-lg border border-gray-200"></div>
+            
+            <button id="downloadQrBtn" class="mt-6 w-full bg-primary-green text-white font-semibold py-3 rounded-xl hover:bg-opacity-90 transition duration-300">
+                📥 Download QR Code Now
+            </button>
+
+            <div class="mt-8">
+                <p class="text-xs text-gray-500 mb-2">Check your university email for the official confirmation.</p>
+                <button onclick="window.location.reload()" class="w-full bg-primary-green text-white font-semibold py-3 rounded-xl shadow-lg hover:bg-opacity-90 transition duration-300">
+                    Start New Booking
+                </button>
+            </div>
+        </div>
+
+
+        <script>
+            // --- UI Element References ---
+            const selectMethodStep = document.getElementById('step-select-method');
+            const cardDetailsStep = document.getElementById('step-card-details');
+            const transactionSlipStep = document.getElementById('step-transaction-slip');
+            const successModal = document.getElementById('payment-success-modal');
+            const nextStepBtn = document.getElementById('nextStepBtn');
+            const logoBoxes = document.querySelectorAll('.logo-box');
+            const cardPaymentForm = document.getElementById('step-card-details');
+            const slipPaymentForm = document.getElementById('step-transaction-slip');
+            const providerNameSpan = document.getElementById('paymentProviderName');
+            const finalPriceDisplay = document.getElementById('final-price-display');
+            const roomInfoSpan = document.getElementById('room-info');
+            const qrcodeContainer = document.getElementById('qrcode-container');
+            const downloadQrBtn = document.getElementById('downloadQrBtn');
+            const cardNumberInput = document.getElementById('cardNumber'); 
+
+            // --- Constants & Variables ---
+            let selectedMethodType = 'Card'; 
+            let selectedProvider = 'Visa/MasterCard'; 
+            let finalPrice = 0; 
+            const BASE_PRICE = 6000;
+            const PRIVATE_ROOM_SURCHARGE = 0; 
+            let currentQrDataPayload = {}; 
+            
+            const cardInputIds = ['firstName', 'lastName', 'cardNumber', 'expiryMonth', 'expiryYear', 'cvv'];
+
+
+            // --- Helper Functions ---
+            function getUrlParameter(name) {
+                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+                const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+                const results = regex.exec(location.search);
+                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+            };
+
+            function calculateFinalPrice(roomNumber) {
+                const roomPrefix = Math.floor(roomNumber / 100);
+                let price = BASE_PRICE;
+                if (roomPrefix === 2) {
+                    price += PRIVATE_ROOM_SURCHARGE; 
+                }
+                const serviceFee = 100;
+                return price + serviceFee;
+            }
+            
+            function updateFileName(input, displayId) {
+                const display = document.getElementById(displayId);
+                display.textContent = input.files.length > 0 ? input.files[0].name : 'No file chosen';
+            }
+            
+            function alertMessage(message) {
+                console.log(message);
+            }
+
+            // --- Border and Validation Functions ---
+            
+            /**
+             * Updates the border color based on the validation status.
+             * @param {HTMLElement} input The input element.
+             * @param {boolean} isValid The validation status.
+             */
+            function updateBorder(input, isValid) {
+                // Remove existing validation borders
+                input.classList.remove('input-valid', 'input-error'); 
+                
+                // Add the appropriate validation class
+                if (isValid) {
+                    input.classList.add('input-valid'); // Adds green border
+                } else {
+                    input.classList.add('input-error'); // Adds red border
+                }
+                
+                // Reapply the standard focus logic which is part of input-style for all bordered fields
+                if (input.classList.contains('input-style')) {
+                    if (isValid) {
+                         input.classList.remove('focus:ring-red-500', 'focus:border-red-500');
+                         input.classList.add('focus:ring-primary-green', 'focus:border-primary-green');
+                    } else {
+                         input.classList.remove('focus:ring-primary-green', 'focus:border-primary-green');
+                         input.classList.add('focus:ring-red-500', 'focus:border-red-500');
+                    }
+                }
+            }
+
+            // --- Card Number Formatting Function ---
+            cardNumberInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s/g, ''); // Remove existing spaces
+                
+                // Keep only digits
+                value = value.replace(/\D/g, ''); 
+
+                // Limit to 12 digits
+                const limit = 12;
+                if (value.length > limit) {
+                    value = value.substring(0, limit);
+                }
+
+                // Insert spaces after every 4 digits
+                let formattedValue = '';
+                for (let i = 0; i < value.length; i++) {
+                    if (i > 0 && i % 4 === 0) {
+                        formattedValue += ' ';
+                    }
+                    formattedValue += value[i];
+                }
+
+                e.target.value = formattedValue;
+                
+                // Validate Card Number after formatting
+                const isCardValid = formattedValue.replace(/\s/g, '').length === 12;
+                updateBorder(e.target, isCardValid);
+            });
+            
+            // --- Name Validation Function (Max 7 characters, no numbers) ---
+            function validateNameInput(inputElementId, errorElementId) {
+                const input = document.getElementById(inputElementId);
+                const errorDisplay = document.getElementById(errorElementId);
+                
+                const validate = () => {
+                    const value = input.value.trim();
+                    // Check 1: Does it contain digits? OR Check 2: Is it empty? OR Check 3: Is it longer than 7?
+                    const hasError = /\d/.test(value) || value.length === 0 || value.length > 7;
+                    
+                    if (hasError) {
+                        errorDisplay.classList.remove('hidden');
+                        updateBorder(input, false);
+                        input.setCustomValidity('Name must be 1-7 letters/spaces, no numbers.');
+                    } else {
+                        errorDisplay.classList.add('hidden');
+                        updateBorder(input, true);
+                        input.setCustomValidity(''); 
+                    }
+                };
+
+                input.addEventListener('input', validate);
+                input.addEventListener('blur', validate);
+            }
+            
+            // --- Generic Input Validation and Border Update ---
+            function setupGenericValidation(inputElementId) {
+                const input = document.getElementById(inputElementId);
+                
+                input.addEventListener('change', () => {
+                    // Check validity for select elements (expiry month/year)
+                    const isValid = input.checkValidity() && input.value !== '';
+                    updateBorder(input, isValid);
+                });
+                
+                input.addEventListener('input', () => {
+                     // Check validity for cvv (length check)
+                    const isValid = input.checkValidity();
+                    // CVV has special input rule, check for length >= 3
+                    if (input.type === 'password' && input.value.length >= 3) {
+                         updateBorder(input, true);
+                    } else if (input.type === 'password' && input.value.length < 3 && input.value.length > 0) {
+                        updateBorder(input, false);
+                    }
+                });
+            }
+
+            // --- Dropdown Population ---
+            function populateExpiryDropdowns() {
+                const monthSelect = document.getElementById('expiryMonth');
+                const yearSelect = document.getElementById('expiryYear');
+                
+                // Populate Months (01 to 12)
+                for (let i = 1; i <= 12; i++) {
+                    const monthValue = i.toString().padStart(2, '0');
+                    const option = document.createElement('option');
+                    option.value = monthValue;
+                    option.textContent = monthValue;
+                    monthSelect.appendChild(option);
+                }
+
+                // Populate Years (YY format, current year + next 15 years)
+                const currentYear = new Date().getFullYear();
+                const startYear = parseInt(currentYear.toString().slice(-2));
+                const endYear = startYear + 15; 
+                
+                for (let i = startYear; i <= endYear; i++) {
+                    const yearValue = (i % 100).toString().padStart(2, '0');
+                    const option = document.createElement('option');
+                    option.value = yearValue;
+                    option.textContent = yearValue;
+                    yearSelect.appendChild(option);
+                }
+            }
+
+            // --- CORE FUNCTIONALITY ---
+            function displaySuccessAndQRCode(selectedProvider, price, roomNumber, method, guestDetails, transactionRef) {
+                
+                // 1. Prepare the comprehensive data payload for the QR code and the email
+                const bookingDetailsPayload = {
+                    bookingStatus: 'Confirmed',
+                    room: roomNumber ? roomNumber : 'N/A',
+                    amount: price,
+                    provider: selectedProvider,
+                    method: method,
+                    transaction_ref: transactionRef || 'N/A',
+                    guest: {
+                        name: guestDetails.name,
+                        reg: guestDetails.regNumber,
+                        email: guestDetails.uniEmail,
+                        phone: guestDetails.phone || getUrlParameter('whatsappNumber') || 'N/A' 
+                    },
+                    check_in_date: getUrlParameter('checkInDate') || 'N/A',
+                    check_out_date: getUrlParameter('checkOutDate') || 'N/A',
+                    timestamp: new Date().toISOString()
+                };
+
+                // Store globally for download function
+                currentQrDataPayload = bookingDetailsPayload; 
+
+                // 2. Hide steps and show the success modal
+                selectMethodStep.classList.add('hidden');
+                cardDetailsStep.classList.add('hidden');
+                transactionSlipStep.classList.add('hidden');
+                successModal.classList.remove('hidden');
+
+                // 3. Clear existing QR and generate new one
+                qrcodeContainer.innerHTML = ''; 
+                new QRCode(qrcodeContainer, {
+                    // Encode the full JSON payload into the QR code
+                    text: JSON.stringify(bookingDetailsPayload), 
+                    width: 150,
+                    height: 150,
+                    colorDark: "#333333",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                
+                // 4. *** SIMULATE BACKEND EMAIL PROCESS ***
+                console.log("--- SIMULATING SERVER REQUEST FOR EMAIL ---");
+                console.log("Sending the following JSON data to the server for Database Insertion and Email:");
+                console.log(bookingDetailsPayload);
+                console.log("-----------------------------------------");
+            }
+
+            /**
+             * Triggers the download of the generated QR code image.
+             */
+            downloadQrBtn.addEventListener('click', () => {
+                const canvas = qrcodeContainer.querySelector('canvas');
+                if (canvas) {
+                    const dataURL = canvas.toDataURL("image/png");
+                    
+                    const a = document.createElement('a');
+                    a.href = dataURL;
+                    // Naming convention for the downloaded file
+                    a.download = `Booking_QR_${currentQrDataPayload.guest.reg}_Room_${currentQrDataPayload.room}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    
+                    console.log(`QR Code downloaded: ${a.download}`);
+                } else {
+                    alert("QR Code not generated yet.");
+                }
+            });
+
+
+            // --- Event Listeners for UI Flow ---
+            logoBoxes.forEach(box => {
+                box.addEventListener('click', () => {
+                    logoBoxes.forEach(b => b.classList.remove('selected'));
+                    box.classList.add('selected');
+                    selectedMethodType = box.getAttribute('data-method');
+                    selectedProvider = box.getAttribute('data-provider');
+                });
+            });
+
+            nextStepBtn.addEventListener('click', () => {
+                selectMethodStep.classList.add('hidden');
+                if (selectedMethodType === 'Card') {
+                    providerNameSpan.textContent = selectedProvider; 
+                    cardDetailsStep.classList.remove('hidden');
+                } else {
+                    slipProviderName.textContent = selectedProvider + ' Payment';
+                    document.getElementById('slip-provider-display').textContent = selectedProvider;
+                    document.getElementById('slip-price-display').textContent = `Rs. ${finalPrice.toLocaleString('en-IN')}`;
+                    transactionSlipStep.classList.remove('hidden');
+                    alertMessage(`⚠️ Please finish payment of Rs. ${finalPrice.toLocaleString('en-IN')} using the ${selectedProvider} app/portal. Then, submit the transaction details.`);
+                }
+            });
+
+            [document.getElementById('backToMethodBtnCard'), document.getElementById('backToMethodBtnSlip')].forEach(btn => {
+                btn.addEventListener('click', () => {
+                    cardDetailsStep.classList.add('hidden');
+                    transactionSlipStep.classList.add('hidden');
+                    selectMethodStep.classList.remove('hidden');
+                    // Reset button states
+                    const cardSubmitButton = cardPaymentForm.querySelector('button[type="submit"]');
+                    cardSubmitButton.textContent = 'Submit Secure Payment';
+                    cardSubmitButton.disabled = false;
+                    cardSubmitButton.classList.remove('bg-gray-500');
+                    cardSubmitButton.classList.add('bg-primary-green');
+                });
+            });
+
+
+            // --- Payment Submission Handlers ---
+            
+            // Handle Card form submission (Instant Confirmation)
+            cardPaymentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const submitButton = e.target.querySelector('button[type="submit"]');
+                let formIsValid = true;
+
+                // 1. Validate all fields and apply final borders
+                cardInputIds.forEach(id => {
+                    const input = document.getElementById(id);
+                    
+                    if (id === 'firstName' || id === 'lastName') {
+                        // Custom name validation check (letters/spaces, length 1-7, no numbers)
+                        const value = input.value.trim();
+                        const nameHasError = /\d/.test(value) || value.length === 0 || value.length > 7;
+                        
+                        if (nameHasError) {
+                            input.setCustomValidity('Name must be 1-7 letters/spaces, no numbers.');
+                            document.getElementById(id + 'Error').classList.remove('hidden');
+                            updateBorder(input, false);
+                            formIsValid = false;
+                        } else {
+                             input.setCustomValidity('');
+                             document.getElementById(id + 'Error').classList.add('hidden');
+                             updateBorder(input, true);
+                        }
+                    } else if (id === 'cardNumber') {
+                        // Card number validation (exactly 12 digits)
+                        const cardNumberClean = input.value.replace(/\s/g, '');
+                        if (cardNumberClean.length !== 12) {
+                            updateBorder(input, false);
+                            input.setCustomValidity('Card Number must contain exactly 12 digits.');
+                            formIsValid = false;
+                        } else {
+                            updateBorder(input, true);
+                            input.setCustomValidity('');
+                        }
+                    } else {
+                        // HTML standard validation for CVV, Month, Year
+                        if (!input.checkValidity() || input.value === '') {
+                            updateBorder(input, false);
+                            formIsValid = false;
+                        } else {
+                             updateBorder(input, true);
+                        }
+                    }
+                });
+
+                if (!formIsValid) {
+                    alert('Please correct the highlighted fields before proceeding.');
+                    return;
+                }
+                
+                // 2. Processing Simulation
+                submitButton.textContent = 'Processing...';
+                submitButton.disabled = true;
+                submitButton.classList.remove('bg-primary-green');
+                submitButton.classList.add('bg-gray-500'); 
+                
+                setTimeout(() => {
+                    const roomNumber = getUrlParameter('roomNumber') || 'N/A';
+                    const guestDetails = {
+                        name: document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value,
+                        regNumber: getUrlParameter('regNumber') || 'N/A',
+                        uniEmail: getUrlParameter('uniEmail') || 'N/A',
+                    };
+
+                    displaySuccessAndQRCode(selectedProvider, finalPrice.toLocaleString('en-IN'), roomNumber, selectedMethodType, guestDetails, 'CARD_PROCESSED');
+                    submitButton.textContent = 'Payment Complete!';
+                }, 1500);
+            });
+            
+            // Handle Slip/Reference form submission (Verification Submitted)
+            slipPaymentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const submitButton = e.target.querySelector('button[type="submit"]');
+                const refInput = document.getElementById('transactionRef');
+                
+                if (!refInput.value) return;
+
+                submitButton.textContent = 'Verifying...';
+                submitButton.disabled = true;
+                submitButton.classList.remove('bg-primary-green');
+                submitButton.classList.add('bg-gray-500'); 
+                
+                setTimeout(() => {
+                    const roomNumber = getUrlParameter('roomNumber') || 'N/A';
+                    const guestDetails = {
+                        name: getUrlParameter('guestName') || 'Guest Name Placeholder',
+                        regNumber: getUrlParameter('regNumber') || 'N/A',
+                        uniEmail: getUrlParameter('uniEmail') || 'N/A',
+                    };
+                    
+                    displaySuccessAndQRCode(selectedProvider, finalPrice.toLocaleString('en-IN'), roomNumber, selectedMethodType, guestDetails, refInput.value.trim());
+                    submitButton.textContent = 'Verification Submitted!';
+                }, 2000);
+            });
+            
+            // --- INITIALIZATION ---
+            window.onload = () => {
+                populateExpiryDropdowns(); 
+                
+                // Set up continuous validation for all card-related inputs
+                validateNameInput('firstName', 'firstNameError');
+                validateNameInput('lastName', 'lastNameError');
+                setupGenericValidation('cvv');
+                setupGenericValidation('expiryMonth');
+                setupGenericValidation('expiryYear');
+
+                // Initialize all card form inputs with the base gray border (handled by .input-style, but ensuring it's the right color)
+                cardInputIds.forEach(id => {
+                    const input = document.getElementById(id);
+                    // Ensure all input-style fields have the correct initial border
+                    if (input.classList.contains('input-style')) {
+                        input.classList.add('border-gray-500', 'border-2'); 
+                    }
+                });
+
+
+                const roomNumber = getUrlParameter('roomNumber');
+                
+                if (roomNumber) {
+                    finalPrice = calculateFinalPrice(parseInt(roomNumber));
+                    roomInfoSpan.textContent = `for Room ${roomNumber}`;
+                    finalPriceDisplay.textContent = `Rs. ${finalPrice.toLocaleString('en-IN')}`; 
+                } else {
+                    finalPrice = BASE_PRICE + 100;
+                    roomInfoSpan.textContent = `(Room selection missing, showing base price)`;
+                    finalPriceDisplay.textContent = `Rs. ${finalPrice.toLocaleString('en-IN')}`;
+                }
+            };
+        </script>
+
+    </div>
+</body>
+</html>

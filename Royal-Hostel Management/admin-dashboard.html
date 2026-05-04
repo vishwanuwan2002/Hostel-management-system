@@ -1,0 +1,1634 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="image/favicon.png" type="image/png">
+    <title>Admin Dashboard - StayEasy</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="vendors/linericon/style.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <!-- main css -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- QR Code Library -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --header-height: 70px;
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --text-muted: #6c757d;
+            --border-color: #e9ecef;
+        }
+
+        body {
+            background-color: #f8f9fa; /* Slightly lighter/cleaner bg */
+            font-family: "Poppins", sans-serif;
+            overflow-x: hidden;
+            color: #343a40;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: linear-gradient(135deg, #1b1b1e 0%, #333b82 100%);
+            color: white;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-header h3 {
+            color: white;
+            font-size: 1.2rem;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            list-style: none;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+            cursor: pointer;
+        }
+
+        .sidebar-menu li a:hover, .sidebar-menu li a.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left-color: var(--primary-color);
+        }
+
+        .sidebar-menu li a i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .dashboard-header {
+            background: white;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Stats Cards (Professional Update) */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+        }
+
+        .stat-card.border-blue::before { background: #667eea; }
+        .stat-card.border-yellow::before { background: #ffc107; }
+        .stat-card.border-green::before { background: #28a745; }
+        .stat-card.border-red::before { background: #dc3545; }
+
+        .stat-info h4 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+            color: #2d3748;
+        }
+
+        .stat-info p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .bg-blue { background: rgba(102, 126, 234, 0.1); color: #667eea; }
+        .bg-yellow { background: rgba(255, 193, 7, 0.1); color: #ffc107; }
+        .bg-green { background: rgba(40, 167, 69, 0.1); color: #28a745; }
+        .bg-red { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
+
+        /* Table Section (Professional Update) */
+        .recent-requests {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        .table thead th {
+            border: none;
+            border-bottom: 2px solid #f4f7fa;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            padding: 15px;
+        }
+
+        .table tbody tr {
+            background: #fff;
+            box-shadow: none;
+            border-bottom: 1px solid #f4f7fa;
+            transition: background-color 0.2s;
+        }
+
+        .table tbody tr:hover {
+            transform: none;
+            background-color: #fafbfe;
+            box-shadow: none;
+        }
+
+        .table td {
+            padding: 18px 15px;
+            vertical-align: middle;
+            border: none;
+            color: #495057;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-inprogress { background: #cce5ff; color: #004085; }
+        .status-completed { background: #d4edda; color: #155724; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+
+        .priority-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .priority-high { background: #dc3545; }
+        .priority-medium { background: #ffc107; }
+        .priority-low { background: #28a745; }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f8f9fa;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 2px;
+            color: #adb5bd;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover { 
+            background: var(--primary-color); 
+            color: white;
+        }
+
+        /* Bookings Dashboard Styles (Professional Update) */
+        .bookings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .room-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .room-card:hover {
+            transform: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+
+        .room-header-clean {
+            padding: 20px;
+            border-bottom: 1px solid #f4f7fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .room-number {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .room-status-dot {
+            height: 8px;
+            width: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .room-body-clean {
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .occupant-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .occupant-item:last-child { margin-bottom: 0; }
+
+        .occupant-avatar {
+            width: 35px;
+            height: 35px;
+            background: #e2e8f0;
+            color: #4a5568;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+
+        .occupant-info {
+            line-height: 1.2;
+        }
+
+        .occupant-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .occupant-reg {
+            font-size: 0.75rem;
+            color: #718096;
+        }
+
+        .empty-slot-clean {
+            border: 1px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            color: #a0aec0;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-card {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 15px;
+            padding: 30px;
+            animation: slideUp 0.3s ease;
+        }
+
+        /* Residence Count Styles */
+        .residence-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #eee;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+
+        .residence-list-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .check-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: transparent;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .check-btn.checked {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .check-btn:hover {
+            border-color: #28a745;
+        }
+
+        /* Staff Grid Styles */
+        .staff-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+        }
+
+        .staff-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .staff-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+
+        .staff-img-wrapper {
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+            background-color: #e9ecef;
+        }
+
+        .staff-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .staff-card:hover .staff-img-wrapper img {
+            transform: scale(1.05);
+        }
+
+        .staff-details {
+            padding: 20px;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .staff-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .staff-role {
+            color: var(--primary-color);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+
+        .staff-bio {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .staff-actions {
+            border-top: 1px solid #f4f7fa;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            background: #fafbfe;
+        }
+
+        /* Professional Settings Styles */
+        .settings-container {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden;
+            min-height: 600px;
+        }
+
+        .settings-sidebar {
+            width: 250px;
+            background: #f8f9fa;
+            border-right: 1px solid #eee;
+            padding: 20px 0;
+            flex-shrink: 0;
+        }
+
+        .settings-nav-item {
+            padding: 15px 25px;
+            cursor: pointer;
+            color: #6c757d;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            border-left: 3px solid transparent;
+        }
+
+        .settings-nav-item:hover {
+            background: rgba(0,0,0,0.03);
+            color: #333;
+        }
+
+        .settings-nav-item.active {
+            background: white;
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .settings-nav-item i {
+            width: 25px;
+            text-align: center;
+            margin-right: 10px;
+        }
+
+        .settings-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .settings-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        .settings-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+
+        .settings-subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 0.9rem;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            transition: border-color 0.2s;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            color: #4a5568;
+        }
+
+        .form-control-custom:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .toggle-switch-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #f4f7fa;
+        }
+
+        .toggle-switch-wrapper:last-child {
+            border-bottom: none;
+        }
+
+        /* Custom Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .settings-container { flex-direction: column; }
+            .settings-sidebar { width: 100%; border-right: none; border-bottom: 1px solid #eee; display: flex; overflow-x: auto; }
+            .settings-nav-item { flex-shrink: 0; border-left: none; border-bottom: 3px solid transparent; }
+            .settings-nav-item.active { border-left: none; border-bottom-color: var(--primary-color); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>Admin Dashboard</h3>
+        </div>
+        <ul class="sidebar-menu">
+            <!-- Navigation Links -->
+            <li><a href="#" onclick="switchView('maintenance')" id="nav-maintenance" class="active"><i class="fa fa-wrench"></i> Maintenance</a></li>
+            <li><a href="#" onclick="switchView('bookings')" id="nav-bookings"><i class="fa fa-bed"></i> Bookings</a></li>
+            <li><a href="#" onclick="switchView('qr-scanner')" id="nav-qr-scanner"><i class="fa fa-qrcode"></i> QR Scanner</a></li>
+            <li><a href="#" onclick="switchView('residence-count')" id="nav-residence-count"><i class="fa fa-list-ol"></i> Residence Count</a></li>
+            <li><a href="#" onclick="switchView('staff')" id="nav-staff"><i class="fa fa-users"></i> Staff</a></li>
+            <li><a href="#" onclick="switchView('settings')" id="nav-settings"><i class="fa fa-cog"></i> Settings</a></li>
+            <li><a href="admin-dashboard-login.html"><i class="fa fa-sign-out"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <button class="btn d-md-none" id="sidebarToggle"><i class="fa fa-bars"></i></button>
+            <h4 id="pageTitle">Maintenance Dashboard</h4>
+            <div class="user-profile">
+                <div class="text-right d-none d-sm-block">
+                    <div style="font-weight: 600;">Admin User</div>
+                    <div style="font-size: 0.8rem; color: #888;">Manager</div>
+                </div>
+                <div class="user-avatar">A</div>
+            </div>
+        </div>
+
+        <!-- VIEW 1: Maintenance Dashboard -->
+        <div id="maintenance-view">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card border-blue">
+                    <div class="stat-info">
+                        <h4 id="totalCount">0</h4>
+                        <p>Total Requests</p>
+                    </div>
+                    <div class="stat-icon bg-blue"><i class="fa fa-list"></i></div>
+                </div>
+                <div class="stat-card border-yellow">
+                    <div class="stat-info">
+                        <h4 id="pendingCount">0</h4>
+                        <p>Pending</p>
+                    </div>
+                    <div class="stat-icon bg-yellow"><i class="fa fa-clock-o"></i></div>
+                </div>
+                <div class="stat-card border-green">
+                    <div class="stat-info">
+                        <h4 id="progressCount">0</h4>
+                        <p>In Progress</p>
+                    </div>
+                    <div class="stat-icon bg-green"><i class="fa fa-spinner"></i></div>
+                </div>
+                <div class="stat-card border-red">
+                    <div class="stat-info">
+                        <h4 id="completedCount">0</h4>
+                        <p>Completed</p>
+                    </div>
+                    <div class="stat-icon bg-red"><i class="fa fa-check"></i></div>
+                </div>
+            </div>
+
+            <!-- Recent Requests Table -->
+            <div class="recent-requests">
+                <div class="section-header">
+                    <h5>Recent Maintenance Requests</h5>
+                    <div>
+                        <select class="form-control form-control-sm" id="statusFilter">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="inprogress">In Progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Issue</th>
+                                <th>Location</th>
+                                <th>Priority</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTableBody">
+                            <!-- Rows will be populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: Bookings Dashboard -->
+        <div id="bookings-view" style="display: none;">
+            <div class="recent-requests" style="background: transparent; box-shadow: none; padding: 0;">
+                <div class="section-header">
+                    <h5>Current Room Allocations</h5>
+                    <button class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> New Booking</button>
+                </div>
+                
+                <div class="bookings-grid" id="bookingsGrid">
+                    <!-- Booking Cards will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: QR Scanner -->
+        <div id="qr-scanner-view" style="display: none;">
+            <div class="recent-requests">
+                <div class="section-header">
+                    <h5>QR Code Scanner</h5>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="alert alert-info">
+                            <i class="fa fa-info-circle"></i> Point the camera at a QR code to scan.
+                        </div>
+                        <div id="reader" style="width: 100%; border-radius: 10px; overflow: hidden;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 4: Residence Count -->
+        <div id="residence-count-view" style="display: none;">
+            <div class="recent-requests">
+                <div class="section-header">
+                    <h5>Residence Count Check</h5>
+                </div>
+                <div class="form-group">
+                    <label>Enter Room Number</label>
+                    <div class="input-group" style="max-width: 400px;">
+                        <input type="text" class="form-control" id="roomInput" placeholder="e.g. 001">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button" onclick="triggerSearch()"><i class="fa fa-search"></i> Search</button>
+                        </div>
+                    </div>
+                    <small class="text-muted">Press Enter to search</small>
+                </div>
+                
+                <div id="roomResult" class="mt-4">
+
+                    <!-- Results will appear here -->
+                    <div class="text-center text-muted py-5">
+                        <i class="fa fa-search" style="font-size: 3rem; opacity: 0.2;"></i>
+                        <p class="mt-3">Enter a room number to see occupants.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 5: Staff -->
+        <div id="staff-view" style="display: none;">
+            <div class="recent-requests" style="background: transparent; box-shadow: none; padding: 0;">
+                <div class="section-header">
+                    <h5>Hostel Staff Team</h5>
+                    <button class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Staff</button>
+                </div>
+                <div class="staff-grid" id="staffGrid">
+                    <!-- Staff cards populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 6: Settings -->
+        <div id="settings-view" style="display: none;">
+            <div class="settings-container">
+                
+                <!-- Settings Sidebar -->
+                <div class="settings-sidebar">
+                    <div class="settings-nav-item active" id="nav-tab-profile" onclick="switchSettingsTab('profile')">
+                        <i class="fa fa-user-circle"></i> Profile
+                    </div>
+                    <div class="settings-nav-item" id="nav-tab-security" onclick="switchSettingsTab('security')">
+                        <i class="fa fa-lock"></i> Security
+                    </div>
+                    <div class="settings-nav-item" id="nav-tab-notifications" onclick="switchSettingsTab('notifications')">
+                        <i class="fa fa-bell"></i> Notifications
+                    </div>
+                    <div class="settings-nav-item" id="nav-tab-system" onclick="switchSettingsTab('system')">
+                        <i class="fa fa-server"></i> System
+                    </div>
+                </div>
+
+                <!-- Settings Content -->
+                <div class="settings-content">
+                    <!-- Profile Tab -->
+                    <div id="tab-profile" class="settings-section active">
+                        <h3 class="settings-title">Profile Information</h3>
+                        <p class="settings-subtitle">Update your account's profile information and email address.</p>
+                        
+                        <div class="row">
+                            <div class="col-md-4 text-center mb-4">
+                                <div style="width: 120px; height: 120px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem; margin: 0 auto; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);">A</div>
+                                <button class="btn btn-sm btn-outline-primary mt-3">Change Avatar</button>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control-custom" value="Admin User">
+                                
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control-custom" value="admin@abcdef.com">
+                                
+                                <label class="form-label">Role</label>
+                                <input type="text" class="form-control-custom" value="Super Admin" disabled style="background: #f8f9fa; cursor: not-allowed;">
+                                
+                                <div class="text-right mt-3">
+                                    <button class="btn btn-primary px-4" onclick="saveSettings()">Save Changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Tab -->
+                    <div id="tab-security" class="settings-section">
+                        <h3 class="settings-title">Security Settings</h3>
+                        <p class="settings-subtitle">Manage your password and security preferences.</p>
+                        
+                        <div style="max-width: 600px;">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" class="form-control-custom" placeholder="Enter current password">
+                            
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-control-custom" placeholder="Enter new password">
+                            
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control-custom" placeholder="Confirm new password">
+                            
+                            <div class="mt-4 pt-3 border-top">
+                                <h6 class="mb-3 text-dark font-weight-bold">Two-Factor Authentication</h6>
+                                <div class="toggle-switch-wrapper">
+                                    <div>
+                                        <div style="font-weight: 600; color: #333;">Enable 2FA</div>
+                                        <div class="text-muted small">Add an extra layer of security to your account</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="text-right mt-4">
+                                <button class="btn btn-primary px-4" onclick="saveSettings()">Update Security</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notifications Tab -->
+                    <div id="tab-notifications" class="settings-section">
+                        <h3 class="settings-title">Notifications</h3>
+                        <p class="settings-subtitle">Choose how you receive updates.</p>
+                        
+                        <div class="toggle-switch-wrapper">
+                            <div>
+                                <div style="font-weight: 600; color: #333;">Email Notifications</div>
+                                <div class="text-muted small">Receive emails for new maintenance requests</div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-switch-wrapper">
+                            <div>
+                                <div style="font-weight: 600; color: #333;">SMS Alerts</div>
+                                <div class="text-muted small">Receive SMS for urgent issues (High Priority)</div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-switch-wrapper">
+                            <div>
+                                <div style="font-weight: 600; color: #333;">Weekly Reports</div>
+                                <div class="text-muted small">Receive a weekly summary of hostel activities</div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- System Tab -->
+                    <div id="tab-system" class="settings-section">
+                        <h3 class="settings-title">System Preferences</h3>
+                        <p class="settings-subtitle">Manage system-wide settings and data.</p>
+                        
+                        <div class="toggle-switch-wrapper">
+                            <div>
+                                <div style="font-weight: 600; color: #333;">Maintenance Mode</div>
+                                <div class="text-muted small">Prevent users from accessing the system temporarily</div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="mt-5">
+                            <h6 class="mb-4 text-dark font-weight-bold">Data Management</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="p-4 border rounded d-flex align-items-center justify-content-between bg-light">
+                                        <div>
+                                            <div style="font-weight: 600; color: #333;">Export Bookings</div>
+                                            <div class="text-muted small">CSV Format</div>
+                                        </div>
+                                        <button class="btn btn-outline-secondary"><i class="fa fa-download"></i> Download</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="p-4 border rounded d-flex align-items-center justify-content-between bg-light">
+                                        <div>
+                                            <div style="font-weight: 600; color: #333;">Export Requests</div>
+                                            <div class="text-muted small">Excel Format</div>
+                                        </div>
+                                        <button class="btn btn-outline-secondary"><i class="fa fa-download"></i> Download</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Edit Status Modal (Maintenance) -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-card">
+            <h4>Update Status</h4>
+            <p class="text-muted mb-4">Change the status of this maintenance request.</p>
+            <form id="updateStatusForm">
+                <input type="hidden" id="editRequestId">
+                <div class="form-group">
+                    <label>Current Status</label>
+                    <select class="form-control" id="editStatusSelect">
+                        <option value="pending">Pending</option>
+                        <option value="inprogress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Admin Notes</label>
+                    <textarea class="form-control" rows="3" placeholder="Add notes..."></textarea>
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-secondary mr-2" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scan Result Modal -->
+    <div class="modal-overlay" id="scanModal">
+        <div class="modal-card text-center">
+            <div style="font-size: 3rem; color: var(--primary-color); margin-bottom: 15px;">
+                <i class="fa fa-qrcode"></i>
+            </div>
+            <h4>Scan Successful</h4>
+            <p class="text-muted">The following data was retrieved:</p>
+            <div class="p-3 bg-light rounded mb-4 text-left" style="word-break: break-all;">
+                <code id="scanContent" style="color: #333; font-size: 1rem;"></code>
+            </div>
+            <button type="button" class="btn btn-primary btn-block" onclick="closeScanModal()">Close & Scan Another</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script>
+        // --- MAINTENANCE DATA ---
+        let requests = [];
+
+        // Fetch data from backend
+        function fetchMaintenanceRequests() {
+            // Check if running via file protocol
+            if (window.location.protocol === 'file:') {
+                document.getElementById('requestsTableBody').innerHTML = 
+                    `<tr><td colspan="7" class="text-center text-danger">
+                        <strong>Configuration Error:</strong><br>
+                        You are opening this file directly (file://).<br>
+                        Please access it via your local server:<br>
+                        <code>http://localhost/royal-/admin-dashboard.html</code>
+                    </td></tr>`;
+                return;
+            }
+
+            // Add timestamp to prevent caching
+            fetch('get_maintenance_tasks.php?t=' + new Date().getTime())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Server Error: ${response.status} ${response.statusText}`);
+                    }
+                    return response.text().then(text => {
+                        try {
+                            return JSON.parse(text);
+                        } catch (e) {
+                            throw new Error('Invalid JSON response from server. Response: ' + text.substring(0, 50) + '...');
+                        }
+                    });
+                })
+                .then(data => {
+                    console.log('Fetched data:', data); // Debug
+                    requests = data;
+                    renderTable(requests);
+                    updateStats();
+                })
+                .catch(error => {
+                    console.error('Error fetching requests:', error);
+                    document.getElementById('requestsTableBody').innerHTML = 
+                        `<tr><td colspan="7" class="text-center text-danger">
+                            <strong>Connection Error:</strong> ${error.message}<br>
+                            <small>Ensure XAMPP Apache and MySQL are running.</small>
+                        </td></tr>`;
+                });
+        }
+
+        // --- BOOKINGS DATA ---
+        let bookings = [
+            { 
+                room: "001", 
+                occupants: [
+                    { name: "Alice Brown", reg: "2201" },
+                    { name: "Bob Smith", reg: "2202" }
+                ]
+            },
+            { 
+                room: "002", 
+                occupants: [
+                    { name: "Charlie Day", reg: "2203" },
+                    { name: "David Lee", reg: "2204" }
+                ]
+            },
+            { 
+                room: "003", 
+                occupants: [
+                    { name: "Eve Miller", reg: "2205" },
+                    { name: null, reg: null } // Empty slot example
+                ]
+            },
+            { 
+                room: "104", 
+                occupants: [
+                    { name: "Frank Wright", reg: "2206" },
+                    { name: "Grace Ho", reg: "2207" }
+                ]
+            }
+        ];
+
+
+        // --- STAFF DATA ---
+        let staffMembers = [
+            { 
+                name: "kamal Perera", 
+                role: "Head Warden", 
+                bio: "Ensures discipline and student welfare with over 10 years of experience in hostel management.", 
+                img: "image/hostel-staff/staff-1.jpg" 
+            },
+            { 
+                name: "Micchelle Gomez", 
+                role: "Maintenance Lead", 
+                bio: "Expert in facility management, keeping the hostel infrastructure running smoothly 24/7.", 
+                img: "image/hostel-staff/staff-2.jpg" 
+            },
+            { 
+                name: "Samantha Lee", 
+                role: "Cleaning Supervisor", 
+                bio: "Dedicated to maintaining high hygiene standards across all dormitory blocks and common areas.", 
+                img: "image/hostel-staff/staff-3.jpg" 
+            },
+            { 
+                name: "David Johnson", 
+                role: "Security Officer", 
+                bio: "Former military personnel ensuring the safety and security of all residents and property.", 
+                img: "image/hostel-staff/staff-4.jpg" 
+            }
+        ];
+
+        let html5QrcodeScanner = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Init Maintenance
+            fetchMaintenanceRequests();
+            // updateStats(); // Called inside fetchMaintenanceRequests
+            
+            // Init Bookings
+            renderBookings(bookings);
+
+            // Init Staff
+            renderStaff();
+
+            // Sidebar Toggle
+            document.getElementById('sidebarToggle').addEventListener('click', function() {
+                document.getElementById('sidebar').classList.toggle('active');
+            });
+
+            // Filter (Maintenance)
+            document.getElementById('statusFilter').addEventListener('change', function(e) {
+                const filterValue = e.target.value.toLowerCase();
+                if (filterValue === 'all') {
+                    renderTable(requests);
+                } else {
+                    const filtered = requests.filter(r => {
+                        const status = (r.status || '').replace(/\s+/g, '').toLowerCase();
+                        return status === filterValue;
+                    });
+                    renderTable(filtered);
+                }
+            });
+
+            // Form Submit (Maintenance)
+            document.getElementById('updateStatusForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const id = parseInt(document.getElementById('editRequestId').value);
+                const newStatus = document.getElementById('editStatusSelect').value;
+                
+                fetch('update_maintenance_status.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id, status: newStatus })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        fetchMaintenanceRequests(); // Reload data
+                        closeModal();
+                    } else {
+                        alert('Error updating status: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(err => console.error(err));
+            });
+
+            // Residence Count Input Listener
+            document.getElementById('roomInput').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    searchRoom(this.value);
+                }
+            });
+        });
+
+        // --- VIEW SWITCHING LOGIC ---
+        function switchView(viewName) {
+            // Hide all views
+            const views = ['maintenance', 'bookings', 'qr-scanner', 'residence-count', 'staff', 'settings'];
+            views.forEach(v => {
+                document.getElementById(v + '-view').style.display = 'none';
+                const nav = document.getElementById('nav-' + v);
+                if(nav) nav.classList.remove('active');
+            });
+
+            // Show selected view
+            document.getElementById(viewName + '-view').style.display = 'block';
+            const activeNav = document.getElementById('nav-' + viewName);
+            if(activeNav) activeNav.classList.add('active');
+
+            // Update Title
+            const titles = {
+                'maintenance': 'Maintenance Dashboard',
+                'bookings': 'Bookings Dashboard',
+                'qr-scanner': 'QR Code Scanner',
+                'residence-count': 'Residence Count',
+                'staff': 'Staff Management',
+                'settings': 'Settings'
+            };
+            document.getElementById('pageTitle').textContent = titles[viewName];
+
+            // Handle QR Scanner Logic
+            if (viewName === 'qr-scanner') {
+                startScanner();
+            } else {
+                stopScanner();
+            }
+            
+            // Close sidebar on mobile after click
+            if(window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
+        }
+
+        // --- QR SCANNER FUNCTIONS ---
+        function startScanner() {
+            if (!html5QrcodeScanner) {
+                html5QrcodeScanner = new Html5QrcodeScanner(
+                    "reader", 
+                    { fps: 10, qrbox: {width: 250, height: 250} },
+                    /* verbose= */ false
+                );
+                html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+            }
+        }
+
+        function stopScanner() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.clear().catch(error => {
+                    console.error("Failed to clear html5QrcodeScanner. ", error);
+                });
+                html5QrcodeScanner = null;
+            }
+        }
+
+        function onScanSuccess(decodedText, decodedResult) {
+            // Handle the scanned code
+            document.getElementById('scanContent').textContent = decodedText;
+            document.getElementById('scanModal').style.display = 'flex';
+            
+            // Optional: Pause scanning while modal is open
+            if(html5QrcodeScanner) {
+                html5QrcodeScanner.pause();
+            }
+        }
+
+        function onScanFailure(error) {
+            // handle scan failure, usually better to ignore and keep scanning.
+            // console.warn(`Code scan error = ${error}`);
+        }
+
+        function closeScanModal() {
+            document.getElementById('scanModal').style.display = 'none';
+            if(html5QrcodeScanner) {
+                html5QrcodeScanner.resume();
+            }
+        }
+
+        // --- RESIDENCE COUNT FUNCTIONS ---
+        function triggerSearch() {
+            const val = document.getElementById('roomInput').value;
+            searchRoom(val);
+        }
+
+        function searchRoom(roomNum) {
+            const container = document.getElementById('roomResult');
+            container.innerHTML = '';
+
+            if (!roomNum) return;
+
+            const roomData = bookings.find(b => b.room === roomNum);
+
+            if (roomData) {
+                let html = `<h6 class="mb-3">Occupants in Room ${roomData.room}</h6>`;
+                
+                const validOccupants = roomData.occupants.filter(o => o.name !== null);
+                
+                if (validOccupants.length === 0) {
+                    html += `<div class="alert alert-warning">Room is currently empty.</div>`;
+                } else {
+                    validOccupants.forEach((occ, index) => {
+                        html += `
+                            <div class="residence-list-item">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 1.1rem;">${occ.name}</div>
+                                    <div class="text-muted">Reg No: ${occ.reg}</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="check-btn" id="check-${roomNum}-${index}" onclick="togglePresence(this)">
+                                        <i class="fa fa-check"></i>
+                                    </div>
+                                    <div style="font-size: 0.7rem; margin-top: 5px; color: #888;">Present</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fa fa-exclamation-circle"></i> Room <strong>${roomNum}</strong> not found in records.
+                    </div>
+                `;
+            }
+        }
+
+        function togglePresence(element) {
+            element.classList.toggle('checked');
+        }
+
+        function saveSettings() {
+            alert("Settings saved successfully!");
+        }
+
+        function switchSettingsTab(tabName) {
+            // Update Nav
+            document.querySelectorAll('.settings-nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById('nav-tab-' + tabName).classList.add('active');
+            
+            // Update Content
+            document.querySelectorAll('.settings-section').forEach(section => section.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
+        // --- STAFF FUNCTIONS ---
+        function renderStaff() {
+            const grid = document.getElementById('staffGrid');
+            grid.innerHTML = '';
+            staffMembers.forEach(staff => {
+                const card = document.createElement('div');
+                card.className = 'staff-card';
+                // Note: Assuming images are named staff1.jpg, staff2.jpg etc in image/hostel-staff/
+                card.innerHTML = `
+                    <div class="staff-img-wrapper">
+                        <img src="${staff.img}" alt="${staff.name}" onerror="this.parentElement.style.background='#ccc'; this.style.display='none'"> 
+                    </div>
+                    <div class="staff-details">
+                        <div class="staff-name">${staff.name}</div>
+                        <div class="staff-role">${staff.role}</div>
+                        <div class="staff-bio">${staff.bio}</div>
+                    </div>
+                    <div class="staff-actions">
+                        <button class="btn btn-sm btn-outline-primary"><i class="fa fa-envelope"></i> Contact</button>
+                        <button class="btn btn-sm btn-outline-secondary"><i class="fa fa-user"></i> Profile</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- MAINTENANCE FUNCTIONS ---
+        function renderTable(data) {
+            const tbody = document.getElementById('requestsTableBody');
+            tbody.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center">No maintenance requests found.</td></tr>';
+                return;
+            }
+
+            data.forEach(req => {
+                // Handle potential missing fields gracefully
+                const category = req.category || 'Maintenance';
+                const description = req.description || '';
+                const location = req.room_number ? 'Room ' + req.room_number : 'General';
+                const date = req.formatted_date || 'Pending';
+                const requester = req.assigned_to ? req.assigned_to : 'Unassigned';
+                const priority = req.priority || 'medium';
+                const status = req.status || 'Pending';
+
+                const priorityClass = `priority-${priority}`;
+                
+                // Remove spaces and convert to lowercase for class name
+                const statusSlug = status.replace(/\s+/g, '').toLowerCase();
+                const statusClass = `status-${statusSlug}`;
+                const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>#${req.id}</td>
+                    <td>
+                        <div style="font-weight: 600;">${category}</div>
+                        <div style="font-size: 0.8rem; color: #888;">${description}</div>
+                    </td>
+                    <td>${location}</td>
+                    <td><span class="priority-dot ${priorityClass}"></span> ${priority.toUpperCase()}</td>
+                    <td>${date}</td>
+                    <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+                    <td>
+                        <button class="action-btn" onclick="openEditModal(${req.id})" title="Edit Status"><i class="fa fa-pencil"></i></button>
+                        <button class="action-btn" onclick="deleteRequest(${req.id})" title="Delete"><i class="fa fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('totalCount').textContent = requests.length;
+            
+            const countStatus = (statusSlug) => {
+                return requests.filter(r => (r.status || '').replace(/\s+/g, '').toLowerCase() === statusSlug).length;
+            };
+
+            document.getElementById('pendingCount').textContent = countStatus('pending');
+            document.getElementById('progressCount').textContent = countStatus('inprogress');
+            document.getElementById('completedCount').textContent = countStatus('completed');
+        }
+
+        function openEditModal(id) {
+            // Use loose equality (==) to handle both string and number IDs
+            const req = requests.find(r => r.id == id);
+            if (req) {
+                document.getElementById('editRequestId').value = req.id;
+                
+                // Map DB status to select value
+                let selectValue = 'pending';
+                // Handle case-insensitive status matching
+                const status = (req.status || '').toLowerCase().replace(/\s+/g, '');
+                
+                if (status === 'inprogress') selectValue = 'inprogress';
+                else if (status === 'completed') selectValue = 'completed';
+                else if (status === 'rejected') selectValue = 'rejected';
+                
+                document.getElementById('editStatusSelect').value = selectValue;
+                document.getElementById('editModal').style.display = 'flex';
+            } else {
+                console.error('Request not found for ID:', id);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        function deleteRequest(id) {
+            if(confirm('Are you sure you want to delete this request?')) {
+                fetch('delete_maintenance_request.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        fetchMaintenanceRequests(); // Reload data
+                    } else {
+                        alert('Error deleting request: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(err => console.error(err));
+            }
+        }
+
+        // --- BOOKINGS FUNCTIONS ---
+        function renderBookings(data) {
+            const grid = document.getElementById('bookingsGrid');
+            grid.innerHTML = '';
+
+            data.forEach(booking => {
+                // Determine status color based on occupancy
+                const occupiedCount = booking.occupants.filter(o => o.name).length;
+                const totalSlots = 2; // Assuming 2 per room for logic
+                let statusColor = '#28a745'; // Green (Empty/Partial)
+                if (occupiedCount === totalSlots) statusColor = '#dc3545'; // Red (Full)
+                else if (occupiedCount > 0) statusColor = '#ffc107'; // Yellow (Partial)
+                
+                let occupantsHtml = '';
+                // Ensure we have 2 slots for the layout
+                const slots = booking.occupants.length >= 2 ? booking.occupants : [...booking.occupants, {name: null, reg: null}];
+                
+                slots.slice(0, 2).forEach(occ => {
+                    if (occ.name) {
+                        // Get initials
+                        const initials = occ.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+                        occupantsHtml += `
+                            <div class="occupant-item">
+                                <div class="occupant-avatar">${initials}</div>
+                                <div class="occupant-info">
+                                    <div class="occupant-name">${occ.name}</div>
+                                    <div class="occupant-reg">ID: ${occ.reg}</div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        occupantsHtml += `
+                            <div class="empty-slot-clean">
+                                <i class="fa fa-plus-circle"></i> Available
+                            </div>
+                        `;
+                    }
+                });
+
+                const card = document.createElement('div');
+                card.className = 'room-card';
+                card.innerHTML = `
+                    <div class="room-header-clean">
+                        <div class="room-number">Room ${booking.room}</div>
+                        <div class="room-status-dot" style="background: ${statusColor};" title="Status"></div>
+                    </div>
+                    <div class="room-body-clean">
+                        ${occupantsHtml}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const editModal = document.getElementById('editModal');
+            const scanModal = document.getElementById('scanModal');
+            if (event.target == editModal) {
+                closeModal();
+            }
+            if (event.target == scanModal) {
+                closeScanModal();
+            }
+        }
+    </script>
+</body>
+</html>
