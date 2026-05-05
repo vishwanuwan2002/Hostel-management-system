@@ -1,5 +1,11 @@
 # Royal Hostel Management System
 
+[![PHP](https://img.shields.io/badge/PHP-8.0-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Bootstrap](https://img.shields.io/badge/Bootstrap-5.0-7952B3?logo=bootstrap&logoColor=white)](https://getbootstrap.com/)
+[![jQuery](https://img.shields.io/badge/jQuery-3.0-0769AD?logo=jquery&logoColor=white)](https://jquery.com/)
+[![License](https://img.shields.io/badge/license-All%20Rights%20Reserved-red)](LICENSE)
+
 A comprehensive full-stack hostel management system built with PHP, HTML, CSS, and JavaScript, developed to digitize and simplify hostel operations for both residents and administrators.
 
 ## Features
@@ -67,13 +73,12 @@ Royal-Hostel Management
 The system uses a MySQL database. The initial schema can be found in `hostel_system.sql`.
 
 
-## License
-MIT License — Copyright (c) 2025 Vishwa Nuwan
-
-
 ## Acknowledgments
 
 - Bootstrap for responsive design
 - jQuery for JavaScript functionality
 - PHPMailer for email handling (if applicable)
 - All contributors who have helped shape this project
+
+## License
+Copyright (c) 2026 Vishwa Nuwan. All rights reserved. See [LICENSE](LICENSE) for details.
